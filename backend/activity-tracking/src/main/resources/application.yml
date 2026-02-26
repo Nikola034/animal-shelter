@@ -1,0 +1,14 @@
+server:
+  port: 8003
+
+spring:
+  application:
+    name: activity-tracking
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/activity_tracking
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
