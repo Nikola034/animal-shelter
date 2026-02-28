@@ -27,7 +27,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private readonly excludedUrls = [
     '/auth/login',
     '/auth/register',
-    '/auth/refresh'
+    '/auth/refresh-token'
   ];
 
   constructor(private authService: AuthService) {}

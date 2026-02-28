@@ -116,21 +116,26 @@ export class Login implements OnInit, OnDestroy {
     let errorMessage = 'Login failed. Please try again.';
     let errorDetail = '';
 
-    switch (error.status) {
-      case 401:
-        errorMessage = 'Invalid Credentials';
-        errorDetail = 'The username or password you entered is incorrect.';
-        break;
-      case 400:
-        errorMessage = 'Invalid Request';
-        errorDetail = 'Please check your input and try again.';
-        break;
-      case 500:
-        errorMessage = 'Server Error';
-        errorDetail = 'Our servers are experiencing issues. Please try again later.';
-        break;
-      default:
-        errorDetail = 'Please check your connection and try again.';
+    if (error.error?.message) {
+      errorMessage = 'Login Failed';
+      errorDetail = error.error.message;
+    } else {
+      switch (error.status) {
+        case 401:
+          errorMessage = 'Invalid Credentials';
+          errorDetail = 'The username or password you entered is incorrect.';
+          break;
+        case 400:
+          errorMessage = 'Invalid Request';
+          errorDetail = 'Please check your input and try again.';
+          break;
+        case 500:
+          errorMessage = 'Server Error';
+          errorDetail = 'Our servers are experiencing issues. Please try again later.';
+          break;
+        default:
+          errorDetail = 'Please check your connection and try again.';
+      }
     }
 
     this.messageService.add({

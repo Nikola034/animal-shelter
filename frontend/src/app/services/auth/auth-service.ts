@@ -169,7 +169,7 @@ export class AuthService {
 
     return this.http
       .post<RefreshTokenDto>(
-        `${environment.apiGatewayUrl}/auth/refresh`,
+        `${environment.apiGatewayUrl}/auth/refresh-token`,
         { refresh_token: refreshToken }
       )
       .pipe(

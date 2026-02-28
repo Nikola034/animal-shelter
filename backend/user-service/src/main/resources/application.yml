@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/animal_shelter_users
     username: postgres
-    password: postgres
+    password: admin
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,3 +15,12 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+
+jwt:
+  secret: YourBase64EncodedSecretKeyThatIsAtLeast256BitsLongForHS256Algorithm
+  access-token-expiration: 3600000
+  refresh-token-expiration: 604800000
