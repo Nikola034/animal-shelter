@@ -1,0 +1,78 @@
+<p-toast position="top-center"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="mb-4">
+  <h1 class="text-3xl font-bold m-0 mb-2">User Management</h1>
+  <p class="text-color-secondary m-0">Manage user accounts, roles, and statuses</p>
+</div>
+
+<p-card styleClass="shadow-2">
+  <ng-template pTemplate="content">
+
+    <!-- Filter Bar -->
+    <div class="flex justify-content-between align-items-center mb-3">
+      <p-dropdown [options]="statusFilterOptions" [(ngModel)]="statusFilter"
+                  (onChange)="onStatusFilterChange()" placeholder="Filter by status"
+                  styleClass="w-12rem"></p-dropdown>
+
+      <p-button icon="pi pi-refresh" label="Refresh" [text]="true" (onClick)="loadUsers()"></p-button>
+    </div>
+
+    <!-- Users Table -->
+    <p-table [value]="users" [loading]="loading" [paginator]="true" [rows]="10"
+             [rowsPerPageOptions]="[5, 10, 25]" [showCurrentPageReport]="true"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
+             styleClass="p-datatable-sm p-datatable-striped">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="username">Username <p-sortIcon field="username"></p-sortIcon></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+          <th pSortableColumn="role">Role <p-sortIcon field="role"></p-sortIcon></th>
+          <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
+          <th pSortableColumn="created_at">Created <p-sortIcon field="created_at"></p-sortIcon></th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>
+            <span class="font-semibold">{{ user.username }}</span>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <p-dropdown [options]="roleOptions" [ngModel]="user.role"
+                        (onChange)="onRoleChange(user, $event.value)"
+                        [appendTo]="'body'"
+                        styleClass="w-10rem" [style]="{'min-width': '10rem'}"></p-dropdown>
+          </td>
+          <td>
+            <p-dropdown [options]="statusOptions" [ngModel]="user.status"
+                        (onChange)="onStatusChange(user, $event.value)"
+                        [appendTo]="'body'"
+                        styleClass="w-9rem" [style]="{'min-width': '9rem'}"></p-dropdown>
+          </td>
+          <td>
+            {{ user.created_at | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+          <td>
+            <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true"
+                      (onClick)="confirmDelete(user)" pTooltip="Delete user"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            <i class="pi pi-users text-4xl text-color-secondary mb-3 block"></i>
+            <span class="text-color-secondary">No users found</span>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+
+  </ng-template>
+</p-card>
