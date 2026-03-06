@@ -12,3 +12,17 @@ spring:
     port: 5672
     username: guest
     password: guest
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 25MB
+
+app:
+  upload:
+    dir: ./uploads/animals
+    allowed-types: image/jpeg,image/png,image/webp,image/gif
+    max-images-per-animal: 10
