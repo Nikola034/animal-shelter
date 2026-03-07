@@ -36,6 +36,11 @@ export class Sidebar {
             label: 'Dashboard',
             icon: 'pi pi-home',
             routerLink: '/app'
+          },
+          {
+            label: 'Animals',
+            icon: 'pi pi-heart',
+            routerLink: '/app/animals'
           }
         ]
       }

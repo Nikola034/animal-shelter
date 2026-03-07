@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './services/auth/auth-guard';
 import { AdminGuard } from './services/auth/admin-guard';
+import { CaretakerGuard } from './services/auth/caretaker-guard';
 
 export const routes: Routes = [
   // Public routes
@@ -27,6 +28,24 @@ export const routes: Routes = [
         path: 'users',
         loadComponent: () => import('./components/admin/user-management/user-management').then(m => m.UserManagement),
         canActivate: [AdminGuard]
+      },
+      {
+        path: 'animals',
+        loadComponent: () => import('./components/animals/animal-list/animal-list').then(m => m.AnimalList)
+      },
+      {
+        path: 'animals/new',
+        loadComponent: () => import('./components/animals/animal-form/animal-form').then(m => m.AnimalForm),
+        canActivate: [CaretakerGuard]
+      },
+      {
+        path: 'animals/:id',
+        loadComponent: () => import('./components/animals/animal-detail/animal-detail').then(m => m.AnimalDetail)
+      },
+      {
+        path: 'animals/:id/edit',
+        loadComponent: () => import('./components/animals/animal-form/animal-form').then(m => m.AnimalForm),
+        canActivate: [CaretakerGuard]
       }
     ]
   },

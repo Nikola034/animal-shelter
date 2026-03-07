@@ -71,3 +71,87 @@ html, body {
 .p-toast {
   z-index: 10000;
 }
+
+/* Fix PrimeNG p-image component to fill parent container */
+.image-grid-item p-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.image-grid-item p-image > span {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+}
+
+.image-grid-item p-image > span > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Responsive: Mobile sidebar overlay ───────────────── */
+@media screen and (max-width: 768px) {
+  /* Sidebar overlay on mobile */
+  .layout-sidebar-mobile {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    width: 250px !important;
+    height: 100vh;
+  }
+
+  .layout-sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 998;
+  }
+
+  /* Topbar: hide text labels, keep icons compact */
+  .topbar-username {
+    display: none !important;
+  }
+
+  .topbar-app-name {
+    display: none !important;
+  }
+
+  .topbar-logout-btn .p-button-label {
+    display: none !important;
+  }
+
+  .topbar-logout-btn .p-button-icon {
+    margin-right: 0 !important;
+  }
+
+  /* Make filter inputs full-width on mobile */
+  .filter-input-responsive {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Ensure tables can scroll horizontally */
+  .p-datatable-wrapper {
+    overflow-x: auto !important;
+  }
+
+  /* Ensure page headings wrap properly */
+  .page-header-responsive {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+  }
+
+  /* Animal detail action buttons wrap */
+  .detail-actions-responsive {
+    flex-wrap: wrap;
+  }
+}

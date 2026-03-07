@@ -10,10 +10,10 @@
   <ng-template pTemplate="content">
 
     <!-- Filter Bar -->
-    <div class="flex justify-content-between align-items-center mb-3">
+    <div class="flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
       <p-dropdown [options]="statusFilterOptions" [(ngModel)]="statusFilter"
                   (onChange)="onStatusFilterChange()" placeholder="Filter by status"
-                  styleClass="w-12rem"></p-dropdown>
+                  styleClass="w-12rem filter-input-responsive"></p-dropdown>
 
       <p-button icon="pi pi-refresh" label="Refresh" [text]="true" (onClick)="loadUsers()"></p-button>
     </div>
@@ -22,7 +22,8 @@
     <p-table [value]="users" [loading]="loading" [paginator]="true" [rows]="10"
              [rowsPerPageOptions]="[5, 10, 25]" [showCurrentPageReport]="true"
              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
-             styleClass="p-datatable-sm p-datatable-striped">
+             styleClass="p-datatable-sm p-datatable-striped"
+             [responsiveLayout]="'scroll'">
 
       <ng-template pTemplate="header">
         <tr>
