@@ -1,0 +1,114 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="mb-4">
+  <div class="flex justify-content-between align-items-center flex-wrap gap-2 page-header-responsive">
+    <div>
+      <h1 class="text-3xl font-bold m-0 mb-2">Animals</h1>
+      <p class="text-color-secondary m-0">Browse and manage shelter animals</p>
+    </div>
+    <p-button *ngIf="canManageAnimals()" icon="pi pi-plus" label="Register Animal"
+              (onClick)="registerAnimal()"></p-button>
+  </div>
+</div>
+
+<p-card styleClass="shadow-2">
+  <ng-template pTemplate="content">
+
+    <!-- Filter Bar -->
+    <div class="flex flex-wrap gap-3 align-items-center mb-3">
+      <span class="p-input-icon-left filter-input-responsive">
+        <input type="text" pInputText [(ngModel)]="nameFilter" placeholder="Search by name..."
+               (keyup.enter)="onFilterChange()" class="w-15rem filter-input-responsive" />
+      </span>
+
+      <p-dropdown [options]="categoryFilterOptions" [(ngModel)]="categoryFilter"
+                  (onChange)="onFilterChange()" placeholder="Category"
+                  [appendTo]="'body'" styleClass="w-12rem filter-input-responsive"></p-dropdown>
+
+      <p-dropdown [options]="statusFilterOptions" [(ngModel)]="statusFilter"
+                  (onChange)="onFilterChange()" placeholder="Status"
+                  [appendTo]="'body'" styleClass="w-12rem filter-input-responsive"></p-dropdown>
+
+      <p-button icon="pi pi-search" label="Search" [outlined]="true" (onClick)="onFilterChange()"></p-button>
+      <p-button icon="pi pi-filter-slash" label="Clear" [text]="true" (onClick)="clearFilters()"></p-button>
+
+      <div class="flex-grow-1"></div>
+      <p-button icon="pi pi-refresh" [text]="true" [rounded]="true" (onClick)="loadAnimals()"
+                ></p-button>
+    </div>
+
+    <!-- Animals Table -->
+    <p-table [value]="animals" [loading]="loading" [paginator]="true" [rows]="10"
+             [rowsPerPageOptions]="[5, 10, 25]" [showCurrentPageReport]="true"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} animals"
+             styleClass="p-datatable-sm p-datatable-striped"
+             [rowHover]="true" [responsiveLayout]="'scroll'">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 4rem"></th>
+          <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+          <th pSortableColumn="category">Category <p-sortIcon field="category"></p-sortIcon></th>
+          <th pSortableColumn="breed">Breed <p-sortIcon field="breed"></p-sortIcon></th>
+          <th pSortableColumn="gender">Gender <p-sortIcon field="gender"></p-sortIcon></th>
+          <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
+          <th>Chip ID</th>
+          <th pSortableColumn="created_at">Registered <p-sortIcon field="created_at"></p-sortIcon></th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-animal>
+        <tr [pSelectableRow]="animal" class="cursor-pointer">
+          <td>
+            <img *ngIf="animal.image_paths && animal.image_paths.length > 0"
+                 [src]="getImageUrl(animal.image_paths[0])"
+                 [alt]="animal.name"
+                 style="width: 45px; height: 45px; object-fit: cover; border-radius: 8px;" />
+            <div *ngIf="!animal.image_paths || animal.image_paths.length === 0"
+                 class="flex align-items-center justify-content-center bg-gray-100 border-round"
+                 style="width: 45px; height: 45px;">
+              <i class="pi pi-image text-color-secondary"></i>
+            </div>
+          </td>
+          <td>
+            <span class="font-semibold">{{ animal.name }}</span>
+          </td>
+          <td>
+            <p-tag [value]="animal.category" [severity]="getCategorySeverity(animal.category)"></p-tag>
+          </td>
+          <td>{{ animal.breed || '—' }}</td>
+          <td>
+            <i [class]="getGenderIcon(animal.gender)" class="mr-1"></i>
+            {{ animal.gender }}
+          </td>
+          <td>
+            <p-tag [value]="animal.status" [severity]="getStatusSeverity(animal.status)"></p-tag>
+          </td>
+          <td>
+            <span class="text-sm font-mono">{{ animal.chip_id || '—' }}</span>
+          </td>
+          <td>{{ animal.created_at | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <p-button icon="pi pi-eye" [text]="true" [rounded]="true"
+                      (onClick)="viewAnimal(animal)" pTooltip="View details"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9" class="text-center py-5">
+            <i class="pi pi-inbox text-5xl text-color-secondary mb-3 block"></i>
+            <span class="text-color-secondary text-lg block mb-2">No animals found</span>
+            <span class="text-color-secondary text-sm" *ngIf="nameFilter || categoryFilter || statusFilter">
+              Try adjusting your filters
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+
+  </ng-template>
+</p-card>

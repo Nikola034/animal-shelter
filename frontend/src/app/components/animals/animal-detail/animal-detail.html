@@ -1,0 +1,291 @@
+<p-toast position="top-center"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Loading -->
+<div *ngIf="loading" class="flex justify-content-center py-8">
+  <i class="pi pi-spinner pi-spin text-5xl"></i>
+</div>
+
+<ng-container *ngIf="!loading && animal">
+
+  <!-- Header -->
+  <div class="mb-4">
+    <div class="flex align-items-center gap-2 mb-2 flex-wrap">
+      <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" (onClick)="goBack()"></p-button>
+      <h1 class="text-3xl font-bold m-0">{{ animal.name }}</h1>
+      <p-tag [value]="animal.status" [severity]="getStatusSeverity(animal.status)" class="ml-2"></p-tag>
+      <p-tag [value]="animal.category" [severity]="getCategorySeverity(animal.category)" class="ml-1"></p-tag>
+    </div>
+    <div class="flex gap-2 ml-5 flex-wrap detail-actions-responsive" *ngIf="canManageAnimals()">
+      <p-button icon="pi pi-pencil" label="Edit" [outlined]="true" severity="info"
+                (onClick)="editAnimal()"></p-button>
+      <p-button icon="pi pi-sync" label="Change Status" [outlined]="true"
+                (onClick)="openStatusDialog()"></p-button>
+      <p-button icon="pi pi-trash" label="Delete" [outlined]="true" severity="danger"
+                (onClick)="confirmDelete()" *ngIf="isAdmin()"></p-button>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Animal Info Card -->
+    <div class="col-12 lg:col-6">
+      <p-card header="Animal Information" styleClass="shadow-2 h-full">
+        <ng-template pTemplate="content">
+          <div class="grid">
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Category</span>
+              <p-tag [value]="animal.category" [severity]="getCategorySeverity(animal.category)"></p-tag>
+            </div>
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Gender</span>
+              <span><i [class]="getGenderIcon(animal.gender)" class="mr-1"></i> {{ animal.gender }}</span>
+            </div>
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Breed</span>
+              <span class="font-medium">{{ animal.breed || 'Unknown' }}</span>
+            </div>
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Age</span>
+              <span class="font-medium">{{ formatAge(animal.age_months) }}</span>
+            </div>
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Weight</span>
+              <span class="font-medium">{{ animal.weight ? animal.weight + ' kg' : 'Unknown' }}</span>
+            </div>
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Color</span>
+              <span class="font-medium">{{ animal.color || 'Unknown' }}</span>
+            </div>
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Chip ID</span>
+              <span class="font-medium font-mono">{{ animal.chip_id || 'None' }}</span>
+            </div>
+            <div class="col-6 mb-3">
+              <span class="text-color-secondary block mb-1">Registered</span>
+              <span class="font-medium">{{ animal.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="col-12 mb-3" *ngIf="animal.registered_by_username">
+              <span class="text-color-secondary block mb-1">Registered By</span>
+              <span class="font-medium">{{ animal.registered_by_username }}</span>
+            </div>
+            <div class="col-12" *ngIf="animal.description">
+              <span class="text-color-secondary block mb-1">Description</span>
+              <p class="m-0 line-height-3">{{ animal.description }}</p>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <!-- Images Card -->
+    <div class="col-12 lg:col-6">
+      <p-card styleClass="shadow-2 h-full">
+        <ng-template pTemplate="header">
+          <div class="flex justify-content-between align-items-center px-3 pt-3">
+            <h3 class="m-0">Images</h3>
+            <p-button *ngIf="canManageAnimals()" icon="pi pi-upload" label="Upload"
+                      [outlined]="true" size="small" (onClick)="openImageDialog()"></p-button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div *ngIf="animal.image_paths && animal.image_paths.length > 0"
+               class="grid">
+            <div *ngFor="let img of animal.image_paths" class="col-6 md:col-4 relative">
+              <div class="relative image-grid-item" style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px;">
+                <p-image [src]="getImageUrl(img)" alt="Animal image"
+                         [preview]="true"></p-image>
+                <p-button *ngIf="canManageAnimals()" icon="pi pi-times"
+                          [rounded]="true" [text]="true" severity="danger" size="small"
+                          class="absolute" [style]="{'top': '0.25rem', 'right': '0.25rem', 'z-index': '1'}"
+                          (onClick)="confirmDeleteImage(img)" pTooltip="Delete image"></p-button>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!animal.image_paths || animal.image_paths.length === 0"
+               class="flex flex-column align-items-center justify-content-center py-5">
+            <i class="pi pi-image text-5xl text-color-secondary mb-2"></i>
+            <span class="text-color-secondary">No images uploaded</span>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <!-- Medical Records -->
+    <div class="col-12">
+      <p-card styleClass="shadow-2">
+        <ng-template pTemplate="header">
+          <div class="flex justify-content-between align-items-center px-3 pt-3">
+            <h3 class="m-0">Medical Records</h3>
+            <p-button *ngIf="canManageMedicalRecords()" icon="pi pi-plus" label="Add Record"
+                      [outlined]="true" size="small" (onClick)="openMedicalDialog()"></p-button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <p-table [value]="medicalRecords" [paginator]="medicalRecords.length > 5" [rows]="5"
+                   styleClass="p-datatable-sm p-datatable-striped"
+                   [showCurrentPageReport]="true"
+                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records"
+                   [responsiveLayout]="'scroll'">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon></th>
+                <th pSortableColumn="type">Type <p-sortIcon field="type"></p-sortIcon></th>
+                <th pSortableColumn="title">Title <p-sortIcon field="title"></p-sortIcon></th>
+                <th>Description</th>
+                <th>Veterinarian</th>
+                <th>Notes</th>
+                <th *ngIf="isAdmin()">Actions</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-record>
+              <tr>
+                <td>{{ record.date | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <p-tag [value]="record.type" [severity]="getMedicalTypeSeverity(record.type)"></p-tag>
+                </td>
+                <td class="font-semibold">{{ record.title }}</td>
+                <td>{{ record.description || '—' }}</td>
+                <td>{{ record.veterinarian_name }}</td>
+                <td>{{ record.notes || '—' }}</td>
+                <td *ngIf="isAdmin()">
+                  <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
+                            (onClick)="confirmDeleteMedicalRecord(record)"
+                            pTooltip="Delete record"></p-button>
+                </td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td [attr.colspan]="isAdmin() ? 7 : 6" class="text-center py-4">
+                  <i class="pi pi-file text-4xl text-color-secondary mb-2 block"></i>
+                  <span class="text-color-secondary">No medical records</span>
+                </td>
+              </tr>
+            </ng-template>
+
+          </p-table>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <!-- Status History -->
+    <div class="col-12" *ngIf="animal.status_history && animal.status_history.length > 0">
+      <p-card header="Status History" styleClass="shadow-2">
+        <ng-template pTemplate="content">
+          <p-timeline [value]="animal.status_history" layout="vertical" align="left">
+            <ng-template pTemplate="content" let-entry>
+              <div class="flex align-items-center gap-2">
+                <p-tag [value]="entry.status" [severity]="getStatusSeverity(entry.status)"></p-tag>
+                <span class="text-color-secondary text-sm">
+                  by {{ entry.changed_by_username }} on {{ entry.changed_at | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+              </div>
+              <p *ngIf="entry.note" class="m-0 mt-1 text-sm text-color-secondary">
+                {{ entry.note }}
+              </p>
+            </ng-template>
+            <ng-template pTemplate="opposite" let-entry>
+              <span class="text-sm text-color-secondary">{{ entry.changed_at | date:'dd/MM/yyyy' }}</span>
+            </ng-template>
+          </p-timeline>
+        </ng-template>
+      </p-card>
+    </div>
+
+  </div>
+
+</ng-container>
+
+
+<!-- ── Status Change Dialog ────────────────────────────── -->
+<p-dialog header="Change Status" [(visible)]="showStatusDialog" [modal]="true"
+          [style]="{'width': '30rem', 'max-width': '95vw'}" [closable]="true">
+  <div class="flex flex-column gap-3 py-2">
+    <div>
+      <label class="block font-medium mb-2">New Status</label>
+      <p-dropdown [options]="statusOptions" [(ngModel)]="newStatus"
+                  placeholder="Select status" styleClass="w-full"
+                  [appendTo]="'body'"></p-dropdown>
+    </div>
+    <div>
+      <label class="block font-medium mb-2">Note (optional)</label>
+      <textarea pInputTextarea [(ngModel)]="statusNote" rows="3"
+                class="w-full" placeholder="Reason for status change..."></textarea>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" [text]="true" (onClick)="showStatusDialog = false"></p-button>
+    <p-button label="Update Status" icon="pi pi-check" (onClick)="confirmStatusChange()"
+              [disabled]="!newStatus"></p-button>
+  </ng-template>
+</p-dialog>
+
+
+<!-- ── Medical Record Dialog ──────────────────────────── -->
+<p-dialog header="Add Medical Record" [(visible)]="showMedicalDialog" [modal]="true"
+          [style]="{'width': '35rem', 'max-width': '95vw'}" [closable]="true">
+  <form [formGroup]="medicalForm">
+    <div class="flex flex-column gap-3 py-2">
+      <div>
+        <label class="block font-medium mb-2">Type *</label>
+        <p-dropdown [options]="medicalRecordTypeOptions" formControlName="type"
+                    placeholder="Select type" styleClass="w-full"
+                    [appendTo]="'body'"></p-dropdown>
+        <small *ngIf="isMedicalFormInvalid('type')" class="p-error block mt-1">Type is required</small>
+      </div>
+      <div>
+        <label class="block font-medium mb-2">Title *</label>
+        <input pInputText formControlName="title" class="w-full" placeholder="Record title" />
+        <small *ngIf="isMedicalFormInvalid('title')" class="p-error block mt-1">Title is required</small>
+      </div>
+      <div>
+        <label class="block font-medium mb-2">Date *</label>
+        <p-calendar formControlName="date" styleClass="w-full" dateFormat="dd/mm/yy"
+                    [appendTo]="'body'" [showIcon]="true"></p-calendar>
+      </div>
+      <div>
+        <label class="block font-medium mb-2">Description</label>
+        <textarea pInputTextarea formControlName="description" rows="3"
+                  class="w-full" placeholder="Record description..."></textarea>
+      </div>
+      <div>
+        <label class="block font-medium mb-2">Notes</label>
+        <textarea pInputTextarea formControlName="notes" rows="2"
+                  class="w-full" placeholder="Additional notes..."></textarea>
+      </div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" [text]="true" (onClick)="showMedicalDialog = false"></p-button>
+    <p-button label="Save Record" icon="pi pi-check" (onClick)="saveMedicalRecord()"
+              [loading]="savingMedical" [disabled]="medicalForm.invalid"></p-button>
+  </ng-template>
+</p-dialog>
+
+
+<!-- ── Image Upload Dialog ────────────────────────────── -->
+<p-dialog header="Upload Images" [(visible)]="showImageDialog" [modal]="true"
+          [style]="{'width': '35rem', 'max-width': '95vw'}" [closable]="true">
+  <div class="py-2">
+    <p-fileUpload mode="advanced" [multiple]="true" accept="image/*"
+                  [maxFileSize]="5000000" [auto]="false"
+                  chooseLabel="Choose Images" [showUploadButton]="false"
+                  (onSelect)="onImagesSelected($event)">
+      <ng-template pTemplate="empty">
+        <div class="flex align-items-center justify-content-center flex-column py-3">
+          <i class="pi pi-image text-4xl text-color-secondary mb-2"></i>
+          <span class="text-color-secondary">Drag and drop images here</span>
+        </div>
+      </ng-template>
+    </p-fileUpload>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" [text]="true" (onClick)="showImageDialog = false"></p-button>
+    <p-button label="Upload" icon="pi pi-upload" (onClick)="uploadImages()"
+              [loading]="uploadingImages" [disabled]="selectedFiles.length === 0"></p-button>
+  </ng-template>
+</p-dialog>

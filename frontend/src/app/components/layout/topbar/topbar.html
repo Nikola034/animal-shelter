@@ -1,18 +1,18 @@
 <p-toolbar styleClass="surface-card shadow-2 px-3 py-2">
   <ng-template #start>
-    <div class="flex align-items-center gap-3">
+    <div class="flex align-items-center gap-2 md:gap-3">
       <p-button icon="pi pi-bars" [text]="true" [rounded]="true" (onClick)="onToggleSidebar()"></p-button>
       <i class="pi pi-heart-fill text-primary text-2xl"></i>
-      <span class="text-xl font-bold text-primary">Animal Shelter</span>
+      <span class="text-xl font-bold text-primary topbar-app-name">Animal Shelter</span>
     </div>
   </ng-template>
 
   <ng-template #end>
-    <div class="flex align-items-center gap-3">
+    <div class="flex align-items-center gap-2 md:gap-3">
       <p-tag [value]="role" [severity]="roleSeverity" [rounded]="true"></p-tag>
-      <span class="font-semibold">{{ username }}</span>
-      <p-button icon="pi pi-sign-out" label="Logout" [text]="true" severity="secondary"
-                (onClick)="onLogout()"></p-button>
+      <span class="font-semibold topbar-username">{{ username }}</span>
+      <p-button icon="pi pi-sign-out" [label]="'Logout'" [text]="true" severity="secondary"
+                (onClick)="onLogout()" styleClass="topbar-logout-btn"></p-button>
     </div>
   </ng-template>
 </p-toolbar>

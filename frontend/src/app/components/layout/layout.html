@@ -2,16 +2,22 @@
   <!-- Topbar -->
   <app-topbar (toggleSidebar)="onToggleSidebar()"></app-topbar>
 
+  <!-- Mobile backdrop -->
+  <div *ngIf="isMobile && sidebarVisible" class="layout-sidebar-backdrop"
+       (click)="onBackdropClick()"></div>
+
   <!-- Content area -->
-  <div class="flex flex-1">
+  <div class="flex flex-1" style="position: relative;">
     <!-- Sidebar -->
-    <div class="flex-shrink-0 transition-duration-300" [style.width]="sidebarVisible ? '250px' : '0px'"
+    <div class="flex-shrink-0 transition-duration-300"
+         [class.layout-sidebar-mobile]="isMobile"
+         [style.width]="sidebarVisible ? '250px' : '0px'"
          [style.overflow]="'hidden'">
       <app-sidebar [visible]="sidebarVisible"></app-sidebar>
     </div>
 
     <!-- Main content -->
-    <div class="flex-1 p-4 surface-ground">
+    <div class="flex-1 p-3 md:p-4 surface-ground" style="min-width: 0;">
       <router-outlet></router-outlet>
     </div>
   </div>

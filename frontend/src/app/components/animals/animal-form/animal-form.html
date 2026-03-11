@@ -1,0 +1,149 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="mb-4">
+  <div class="flex align-items-center gap-2 mb-2">
+    <p-button icon="pi pi-arrow-left" [text]="true" [rounded]="true" (onClick)="goBack()"></p-button>
+    <h1 class="text-3xl font-bold m-0">{{ pageTitle }}</h1>
+  </div>
+  <p class="text-color-secondary m-0 ml-5">
+    {{ isEditMode ? 'Update animal information' : 'Register a new animal in the shelter' }}
+  </p>
+</div>
+
+<div *ngIf="loading" class="flex justify-content-center py-6">
+  <i class="pi pi-spinner pi-spin text-4xl"></i>
+</div>
+
+<form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <p-card styleClass="shadow-2">
+    <ng-template pTemplate="content">
+
+      <!-- Basic Information -->
+      <h3 class="mt-0 mb-3">Basic Information</h3>
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <label for="name" class="block font-medium mb-2">Name *</label>
+          <input id="name" type="text" pInputText formControlName="name"
+                 class="w-full" placeholder="Animal name" />
+          <small *ngIf="isFieldInvalid('name')" class="p-error block mt-1">
+            Name is required (2-100 characters)
+          </small>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <label for="category" class="block font-medium mb-2">Category *</label>
+          <p-dropdown id="category" [options]="categoryOptions" formControlName="category"
+                      placeholder="Select category" styleClass="w-full"
+                      [appendTo]="'body'"></p-dropdown>
+          <small *ngIf="isFieldInvalid('category')" class="p-error block mt-1">
+            Category is required
+          </small>
+        </div>
+
+        <div class="col-12 md:col-6">
+          <label for="breed" class="block font-medium mb-2">Breed</label>
+          <input id="breed" type="text" pInputText formControlName="breed"
+                 class="w-full" placeholder="e.g. Golden Retriever" />
+        </div>
+
+        <div class="col-12 md:col-6">
+          <label for="gender" class="block font-medium mb-2">Gender *</label>
+          <p-dropdown id="gender" [options]="genderOptions" formControlName="gender"
+                      placeholder="Select gender" styleClass="w-full"
+                      [appendTo]="'body'"></p-dropdown>
+          <small *ngIf="isFieldInvalid('gender')" class="p-error block mt-1">
+            Gender is required
+          </small>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Physical Details -->
+      <h3 class="mb-3">Physical Details</h3>
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <label for="age_months" class="block font-medium mb-2">Age (months)</label>
+          <p-inputNumber id="age_months" formControlName="age_months"
+                         [min]="0" [max]="600" placeholder="Age in months"
+                         styleClass="w-full"></p-inputNumber>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <label for="weight" class="block font-medium mb-2">Weight (kg)</label>
+          <p-inputNumber id="weight" formControlName="weight"
+                         [min]="0" [maxFractionDigits]="2" placeholder="Weight in kg"
+                         styleClass="w-full" mode="decimal"></p-inputNumber>
+        </div>
+
+        <div class="col-12 md:col-4">
+          <label for="color" class="block font-medium mb-2">Color</label>
+          <input id="color" type="text" pInputText formControlName="color"
+                 class="w-full" placeholder="e.g. Brown, White" />
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Identification -->
+      <h3 class="mb-3">Identification</h3>
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <label for="chip_id" class="block font-medium mb-2">Chip ID</label>
+          <input id="chip_id" type="text" pInputText formControlName="chip_id"
+                 class="w-full" placeholder="Microchip identification number" />
+        </div>
+
+        <div class="col-12 md:col-6" *ngIf="isEditMode">
+          <label for="status" class="block font-medium mb-2">Status</label>
+          <p-dropdown id="status" [options]="statusOptions" formControlName="status"
+                      placeholder="Select status" styleClass="w-full"
+                      [appendTo]="'body'"></p-dropdown>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Description -->
+      <h3 class="mb-3">Description</h3>
+      <div class="grid">
+        <div class="col-12">
+          <textarea id="description" pInputTextarea formControlName="description"
+                    rows="4" class="w-full" placeholder="Additional information about the animal...">
+          </textarea>
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <!-- Image Upload -->
+      <h3 class="mb-3">{{ isEditMode ? 'Upload Additional Images' : 'Images' }}</h3>
+      <div class="grid">
+        <div class="col-12">
+          <p-fileUpload mode="advanced" [multiple]="true" accept="image/*"
+                        [maxFileSize]="5000000" [auto]="false"
+                        chooseLabel="Choose Images" [showUploadButton]="false"
+                        (onSelect)="onFilesSelected($event)"
+                        (onClear)="onFilesRemoved()">
+            <ng-template pTemplate="empty">
+              <div class="flex align-items-center justify-content-center flex-column py-3">
+                <i class="pi pi-image text-4xl text-color-secondary mb-2"></i>
+                <span class="text-color-secondary">Drag and drop images here</span>
+              </div>
+            </ng-template>
+          </p-fileUpload>
+        </div>
+      </div>
+
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end gap-2">
+        <p-button label="Cancel" [outlined]="true" (onClick)="goBack()" icon="pi pi-times"></p-button>
+        <p-button [label]="isEditMode ? 'Update' : 'Register'" icon="pi pi-check"
+                  type="submit" [loading]="saving || uploading"
+                  [disabled]="form.invalid"></p-button>
+      </div>
+    </ng-template>
+  </p-card>
+</form>
