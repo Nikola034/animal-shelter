@@ -41,6 +41,12 @@ export class Sidebar {
             label: 'Animals',
             icon: 'pi pi-heart',
             routerLink: '/app/animals'
+          },
+          {
+            label: 'Activity Tracking',
+            icon: 'pi pi-chart-line',
+            routerLink: '/app/activities',
+            visible: this.authService.canManageAnimals()
           }
         ]
       }

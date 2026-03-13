@@ -12,3 +12,8 @@ spring:
     port: 5672
     username: guest
     password: guest
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: Europe/Belgrade

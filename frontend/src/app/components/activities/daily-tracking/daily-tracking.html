@@ -1,0 +1,304 @@
+<p-toast position="top-center"></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Page Header -->
+<div class="mb-4">
+  <h1 class="text-3xl font-bold m-0 mb-2">Daily Activity Tracking</h1>
+  <p class="text-color-secondary m-0">Record daily measurements, activities and feeding for shelter animals</p>
+</div>
+
+<!-- Animal & Date Selection -->
+<p-card styleClass="shadow-2 mb-4">
+  <ng-template pTemplate="content">
+    <div class="flex flex-wrap gap-3 align-items-end">
+      <div class="flex-grow-1" style="min-width: 250px;">
+        <label class="block font-medium mb-2">Select Animal</label>
+        <p-dropdown [options]="animals" [(ngModel)]="selectedAnimalId"
+                    (onChange)="onAnimalOrDateChange()" placeholder="Choose an animal..."
+                    [filter]="true" filterPlaceholder="Search animals..."
+                    [appendTo]="'body'" styleClass="w-full"
+                    [loading]="loadingAnimals"></p-dropdown>
+      </div>
+      <div style="min-width: 200px;">
+        <label class="block font-medium mb-2">Date</label>
+        <p-datepicker [(ngModel)]="selectedDate" (onSelect)="onAnimalOrDateChange()"
+                      dateFormat="dd/mm/yy" [appendTo]="'body'" styleClass="w-full"
+                      [showIcon]="true" [maxDate]="today"></p-datepicker>
+      </div>
+      <p-button icon="pi pi-refresh" [outlined]="true" (onClick)="loadAllData()"
+                [disabled]="!selectedAnimalId" pTooltip="Reload data"></p-button>
+    </div>
+  </ng-template>
+</p-card>
+
+<!-- Loading -->
+<div *ngIf="loadingData" class="flex justify-content-center py-6">
+  <i class="pi pi-spinner pi-spin text-4xl"></i>
+</div>
+
+<!-- No Animal Selected -->
+<div *ngIf="!selectedAnimalId && !loadingData" class="text-center py-8">
+  <i class="pi pi-list text-6xl text-color-secondary mb-3 block"></i>
+  <span class="text-xl text-color-secondary block mb-2">Select an animal to start tracking</span>
+  <span class="text-color-secondary">Choose an animal from the dropdown above</span>
+</div>
+
+<!-- Data Content -->
+<ng-container *ngIf="dataLoaded && !loadingData">
+
+  <!-- Summary Row -->
+  <div class="grid mb-4">
+    <div class="col-12 md:col-3">
+      <p-card styleClass="shadow-1 text-center">
+        <ng-template pTemplate="content">
+          <i class="pi pi-heart text-3xl text-pink-500 mb-2 block"></i>
+          <span class="text-2xl font-bold block">{{ energyLevel }}/10</span>
+          <p-tag [value]="getEnergyLabel()" [severity]="getEnergySeverity()" class="mt-1"></p-tag>
+          <span class="text-color-secondary text-sm block mt-1">Energy Level</span>
+        </ng-template>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card styleClass="shadow-1 text-center">
+        <ng-template pTemplate="content">
+          <i class="pi pi-stopwatch text-3xl text-blue-500 mb-2 block"></i>
+          <span class="text-2xl font-bold block">{{ getTotalActivityMinutes() }} min</span>
+          <span class="text-color-secondary text-sm block mt-1">Total Activity</span>
+        </ng-template>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card styleClass="shadow-1 text-center">
+        <ng-template pTemplate="content">
+          <i class="pi pi-bolt text-3xl text-orange-500 mb-2 block"></i>
+          <span class="text-2xl font-bold block">{{ getTotalFeedingGrams() }} g</span>
+          <span class="text-color-secondary text-sm block mt-1">Total Food</span>
+        </ng-template>
+      </p-card>
+    </div>
+    <div class="col-12 md:col-3">
+      <p-card styleClass="shadow-1 text-center">
+        <ng-template pTemplate="content">
+          <i class="pi pi-chart-line text-3xl text-green-500 mb-2 block"></i>
+          <span class="text-2xl font-bold block">{{ weightGrams ? weightGrams + ' g' : '—' }}</span>
+          <span class="text-color-secondary text-sm block mt-1">Weight</span>
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Measurements Card -->
+  <p-card header="Daily Measurement" styleClass="shadow-2 mb-4">
+    <ng-template pTemplate="content">
+      <div class="flex flex-column gap-3">
+
+        <div class="grid">
+          <div class="col-6">
+            <label class="block font-medium mb-2">Weight (grams)</label>
+            <p-inputNumber [(ngModel)]="weightGrams" [min]="0"
+                           mode="decimal" placeholder="e.g. 1500"
+                           styleClass="w-full"></p-inputNumber>
+          </div>
+          <div class="col-6">
+            <label class="block font-medium mb-2">Temperature (°C)</label>
+            <p-inputNumber [(ngModel)]="temperatureCelsius"
+                           [maxFractionDigits]="1" mode="decimal" placeholder="e.g. 38.5"
+                           styleClass="w-full"></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col-6">
+            <label class="block font-medium mb-2">
+              Energy Level:
+              <p-tag [value]="energyLevel + '/10 - ' + getEnergyLabel()"
+                     [severity]="getEnergySeverity()" class="ml-2"></p-tag>
+            </label>
+            <p-slider [(ngModel)]="energyLevel" [min]="1" [max]="10" [step]="1"
+                      styleClass="w-full"></p-slider>
+          </div>
+          <div class="col-6">
+            <label class="block font-medium mb-2">
+              Mood Level:
+              <p-tag [value]="moodLevel + '/10 - ' + getMoodLabel()"
+                     [severity]="getMoodSeverity()" class="ml-2"></p-tag>
+            </label>
+            <p-slider [(ngModel)]="moodLevel" [min]="1" [max]="10" [step]="1"
+                      styleClass="w-full"></p-slider>
+          </div>
+        </div>
+
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end">
+        <p-button label="Save Measurement" icon="pi pi-save" (onClick)="saveMeasurement()"
+                  [loading]="savingMeasurement" [disabled]="!canManage()"></p-button>
+      </div>
+    </ng-template>
+  </p-card>
+
+  <!-- Activities Card -->
+  <p-card styleClass="shadow-2 mb-4">
+    <ng-template pTemplate="header">
+      <div class="flex justify-content-between align-items-center px-3 pt-3">
+        <h3 class="m-0">Activities</h3>
+        <span class="text-color-secondary">Total: {{ getTotalActivityMinutes() }} min</span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+
+      <!-- Add Activity Form -->
+      <div *ngIf="canManage()" class="surface-50 border-round p-3 mb-3">
+        <div class="flex flex-wrap gap-3 align-items-end">
+          <div style="min-width: 180px;">
+            <label class="block font-medium mb-2 text-sm">Activity Type</label>
+            <p-dropdown [options]="activityTypeOptions" [(ngModel)]="newActivityType"
+                        placeholder="Select activity" styleClass="w-full"
+                        [editable]="true"
+                        [appendTo]="'body'"></p-dropdown>
+          </div>
+          <div style="min-width: 120px;">
+            <label class="block font-medium mb-2 text-sm">Duration (min)</label>
+            <p-inputNumber [(ngModel)]="newDurationMinutes" [min]="1" placeholder="e.g. 15"
+                           styleClass="w-full"></p-inputNumber>
+          </div>
+          <div style="min-width: 120px;">
+            <label class="block font-medium mb-2 text-sm">Time</label>
+            <p-datepicker [(ngModel)]="newActivityTime" [timeOnly]="true"
+                          [hourFormat]="'24'" [appendTo]="'body'"
+                          styleClass="w-full" placeholder="HH:mm"></p-datepicker>
+          </div>
+          <div style="min-width: 150px;">
+            <label class="block font-medium mb-2 text-sm">Notes (optional)</label>
+            <input pInputText [(ngModel)]="newActivityNotes" placeholder="Notes..."
+                   class="w-full" />
+          </div>
+          <p-button icon="pi pi-plus" label="Add" (onClick)="addActivity()"
+                    [loading]="addingActivity"
+                    [disabled]="!newActivityType || !newDurationMinutes || !newActivityTime"></p-button>
+        </div>
+      </div>
+
+      <!-- Activities Table -->
+      <p-table [value]="activities" styleClass="p-datatable-sm p-datatable-striped">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Time</th>
+            <th>Activity</th>
+            <th>Duration</th>
+            <th>Notes</th>
+            <th *ngIf="canManage()" style="width: 4rem">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-activity>
+          <tr>
+            <td class="font-semibold">{{ formatInstantTime(activity.recorded_at) }}</td>
+            <td>
+              <p-tag [value]="getActivityTypeLabel(activity.activity_type)" severity="info"></p-tag>
+            </td>
+            <td>{{ activity.duration_minutes }} min</td>
+            <td class="text-color-secondary">{{ activity.notes || '—' }}</td>
+            <td *ngIf="canManage()">
+              <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
+                        (onClick)="confirmDeleteActivity(activity)"
+                        pTooltip="Remove"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td [attr.colspan]="canManage() ? 5 : 4" class="text-center py-4">
+              <i class="pi pi-inbox text-3xl text-color-secondary mb-2 block"></i>
+              <span class="text-color-secondary">No activities recorded today</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+    </ng-template>
+  </p-card>
+
+  <!-- Feedings Card -->
+  <p-card styleClass="shadow-2 mb-4">
+    <ng-template pTemplate="header">
+      <div class="flex justify-content-between align-items-center px-3 pt-3">
+        <h3 class="m-0">Feedings</h3>
+        <span class="text-color-secondary">Total: {{ getTotalFeedingGrams() }} g</span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+
+      <!-- Add Feeding Form -->
+      <div *ngIf="canManage()" class="surface-50 border-round p-3 mb-3">
+        <div class="flex flex-wrap gap-3 align-items-end">
+          <div style="min-width: 160px;">
+            <label class="block font-medium mb-2 text-sm">Food Type</label>
+            <p-dropdown [options]="foodTypeOptions" [(ngModel)]="newFoodType"
+                        placeholder="Select type" styleClass="w-full"
+                        [editable]="true"
+                        [appendTo]="'body'"></p-dropdown>
+          </div>
+          <div style="min-width: 120px;">
+            <label class="block font-medium mb-2 text-sm">Quantity (grams)</label>
+            <p-inputNumber [(ngModel)]="newQuantityGrams" [min]="1" placeholder="e.g. 200"
+                           styleClass="w-full"></p-inputNumber>
+          </div>
+          <div style="min-width: 120px;">
+            <label class="block font-medium mb-2 text-sm">Meal Time</label>
+            <p-datepicker [(ngModel)]="newMealTime" [timeOnly]="true"
+                          [hourFormat]="'24'" [appendTo]="'body'"
+                          styleClass="w-full" placeholder="HH:mm"></p-datepicker>
+          </div>
+          <div style="min-width: 150px;">
+            <label class="block font-medium mb-2 text-sm">Notes (optional)</label>
+            <input pInputText [(ngModel)]="newFeedingNotes" placeholder="Notes..."
+                   class="w-full" />
+          </div>
+          <p-button icon="pi pi-plus" label="Add" (onClick)="addFeeding()"
+                    [loading]="addingFeeding"
+                    [disabled]="!newFoodType || !newQuantityGrams || !newMealTime"></p-button>
+        </div>
+      </div>
+
+      <!-- Feedings Table -->
+      <p-table [value]="feedings" styleClass="p-datatable-sm p-datatable-striped">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Time</th>
+            <th>Food Type</th>
+            <th>Quantity</th>
+            <th>Notes</th>
+            <th *ngIf="canManage()" style="width: 4rem">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-feeding>
+          <tr>
+            <td class="font-semibold">{{ formatInstantTime(feeding.meal_time) }}</td>
+            <td>
+              <p-tag [value]="getFoodTypeLabel(feeding.food_type)"
+                     [severity]="getFoodTypeSeverity(feeding.food_type)"></p-tag>
+            </td>
+            <td>{{ feeding.quantity_grams }} g</td>
+            <td class="text-color-secondary">{{ feeding.notes || '—' }}</td>
+            <td *ngIf="canManage()">
+              <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
+                        (onClick)="confirmDeleteFeeding(feeding)"
+                        pTooltip="Remove"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td [attr.colspan]="canManage() ? 5 : 4" class="text-center py-4">
+              <i class="pi pi-inbox text-3xl text-color-secondary mb-2 block"></i>
+              <span class="text-color-secondary">No feedings recorded today</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+    </ng-template>
+  </p-card>
+
+</ng-container>

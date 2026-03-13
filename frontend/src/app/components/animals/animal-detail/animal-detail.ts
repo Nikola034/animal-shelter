@@ -350,7 +350,7 @@ export class AnimalDetail implements OnInit, OnDestroy {
     const formValue = this.medicalForm.value;
 
     const dateValue = formValue.date instanceof Date
-      ? formValue.date.toISOString().split('T')[0]
+      ? `${formValue.date.getFullYear()}-${(formValue.date.getMonth() + 1).toString().padStart(2, '0')}-${formValue.date.getDate().toString().padStart(2, '0')}`
       : formValue.date;
 
     this.animalService.createMedicalRecord({
