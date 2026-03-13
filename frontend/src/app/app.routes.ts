@@ -46,6 +46,11 @@ export const routes: Routes = [
         path: 'animals/:id/edit',
         loadComponent: () => import('./components/animals/animal-form/animal-form').then(m => m.AnimalForm),
         canActivate: [CaretakerGuard]
+      },
+      {
+        path: 'activities',
+        loadComponent: () => import('./components/activities/daily-tracking/daily-tracking').then(m => m.DailyTracking),
+        canActivate: [CaretakerGuard]
       }
     ]
   },
