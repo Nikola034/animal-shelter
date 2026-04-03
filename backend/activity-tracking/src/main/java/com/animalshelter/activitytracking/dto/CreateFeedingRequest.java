@@ -1,5 +1,6 @@
 package com.animalshelter.activitytracking.dto;
 
+import com.animalshelter.activitytracking.model.FoodType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,8 +15,8 @@ public class CreateFeedingRequest {
     @NotBlank(message = "Animal ID is required")
     private String animalId;
 
-    @NotBlank(message = "Food type is required")
-    private String foodType;
+    @NotNull(message = "Food type is required")
+    private FoodType foodType;
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1 gram")
@@ -26,6 +27,4 @@ public class CreateFeedingRequest {
     private Instant mealTime;
 
     private String notes;
-
-    private Boolean consumedFully;
 }

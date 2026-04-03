@@ -1,6 +1,7 @@
 package com.animalshelter.activitytracking.dto;
 
 import com.animalshelter.activitytracking.model.FeedingRecord;
+import com.animalshelter.activitytracking.model.FoodType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,14 +16,13 @@ public class FeedingRecordResponse {
 
     private String id;
     private String animalId;
-    private String foodType;
+    private FoodType foodType;
     private Double quantityGrams;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Belgrade")
     private Instant mealTime;
 
     private String notes;
-    private Boolean consumedFully;
     private String recordedBy;
     private String recordedByName;
 
@@ -37,7 +37,6 @@ public class FeedingRecordResponse {
         r.setQuantityGrams(f.getQuantityGrams());
         r.setMealTime(f.getMealTime());
         r.setNotes(f.getNotes());
-        r.setConsumedFully(f.getConsumedFully());
         r.setRecordedBy(f.getRecordedBy());
         r.setRecordedByName(f.getRecordedByName());
         r.setCreatedAt(f.getCreatedAt());

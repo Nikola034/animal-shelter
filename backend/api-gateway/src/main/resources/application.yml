@@ -34,7 +34,7 @@ spring:
         - id: activity-tracking
           uri: http://localhost:8003
           predicates:
-            - Path=/api/activities/**, /api/feeding/**, /api/metrics/**
+            - Path=/api/activities/**, /api/feeding/**, /api/measurements/**
 
         - id: analytics-service
           uri: http://localhost:8004

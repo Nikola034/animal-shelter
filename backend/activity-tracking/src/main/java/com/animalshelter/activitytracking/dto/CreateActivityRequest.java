@@ -1,5 +1,6 @@
 package com.animalshelter.activitytracking.dto;
 
+import com.animalshelter.activitytracking.model.ActivityType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,8 +15,8 @@ public class CreateActivityRequest {
     @NotBlank(message = "Animal ID is required")
     private String animalId;
 
-    @NotBlank(message = "Activity type is required")
-    private String activityType;
+    @NotNull(message = "Activity type is required")
+    private ActivityType activityType;
 
     @NotNull(message = "Duration is required")
     @Min(value = 1, message = "Duration must be at least 1 minute")

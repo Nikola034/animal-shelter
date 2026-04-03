@@ -16,4 +16,6 @@ spring:
     property-naming-strategy: SNAKE_CASE
     serialization:
       write-dates-as-timestamps: false
+    mapper:
+      accept-case-insensitive-enums: true
     time-zone: Europe/Belgrade

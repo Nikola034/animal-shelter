@@ -25,7 +25,7 @@ public class ActivityRecord {
     private String animalId;
 
     @Field("activity_type")
-    private String activityType;
+    private ActivityType activityType;
 
     @Field("duration_minutes")
     private Integer durationMinutes;

@@ -128,7 +128,6 @@ public class ActivityTrackingService {
         record.setQuantityGrams(request.getQuantityGrams());
         record.setMealTime(request.getMealTime());
         record.setNotes(request.getNotes());
-        record.setConsumedFully(request.getConsumedFully());
         record.setRecordedBy(ctx.getUserId());
         record.setRecordedByName(ctx.getUsername());
 
