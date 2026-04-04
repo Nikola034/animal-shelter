@@ -25,7 +25,7 @@ public class FeedingRecord {
     private String animalId;
 
     @Field("food_type")
-    private String foodType;
+    private FoodType foodType;
 
     @Field("quantity_grams")
     private Double quantityGrams;
@@ -34,9 +34,6 @@ public class FeedingRecord {
     private Instant mealTime;
 
     private String notes;
-
-    @Field("consumed_fully")
-    private Boolean consumedFully;
 
     @Field("recorded_by")
     private String recordedBy;

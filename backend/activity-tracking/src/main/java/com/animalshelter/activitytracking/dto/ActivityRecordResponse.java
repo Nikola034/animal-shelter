@@ -1,6 +1,7 @@
 package com.animalshelter.activitytracking.dto;
 
 import com.animalshelter.activitytracking.model.ActivityRecord;
+import com.animalshelter.activitytracking.model.ActivityType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class ActivityRecordResponse {
 
     private String id;
     private String animalId;
-    private String activityType;
+    private ActivityType activityType;
     private Integer durationMinutes;
     private String notes;
 
