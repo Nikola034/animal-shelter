@@ -33,7 +33,6 @@ export interface FeedingRecordResponse {
   quantity_grams: number;
   meal_time: string;
   notes: string | null;
-  consumed_fully: boolean | null;
   recorded_by: string;
   recorded_by_name: string;
   created_at: string;

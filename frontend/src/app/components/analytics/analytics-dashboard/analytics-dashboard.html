@@ -1,0 +1,818 @@
+<p-toast></p-toast>
+
+<div class="p-4">
+  <!-- Header -->
+  <div class="flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="m-0"><i class="pi pi-chart-bar mr-2"></i>Analytics</h2>
+      <p class="text-color-secondary mt-1 mb-0">
+        Data insights and reports for your shelter
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  OVERVIEW CARDS                                        -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="grid mb-4" *ngIf="dashboard && !loadingDashboard">
+    <div class="col-12 md:col-6 lg:col-4">
+      <p-card styleClass="shadow-2">
+        <div class="flex align-items-center justify-content-between">
+          <div>
+            <span class="block text-color-secondary font-medium mb-1"
+              >Total Animals</span
+            >
+            <div class="text-3xl font-bold text-primary">
+              {{ dashboard.total_animals }}
+            </div>
+          </div>
+          <div
+            class="flex align-items-center justify-content-center border-round"
+            style="
+              width: 3rem;
+              height: 3rem;
+              background-color: rgba(66, 165, 245, 0.1);
+            "
+          >
+            <i class="pi pi-heart text-xl text-primary"></i>
+          </div>
+        </div>
+        <div class="mt-2 text-sm">
+          <span class="text-green-500 font-medium"
+            >{{ dashboard.active_animals }} active</span
+          >
+          <span class="text-color-secondary"> &middot; </span>
+          <span class="text-blue-500 font-medium"
+            >{{ dashboard.adopted_animals }} adopted</span
+          >
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-4">
+      <p-card styleClass="shadow-2">
+        <div class="flex align-items-center justify-content-between">
+          <div>
+            <span class="block text-color-secondary font-medium mb-1"
+              >Activities (30d)</span
+            >
+            <div class="text-3xl font-bold" style="color: #66bb6a">
+              {{ dashboard.total_activities_last30_days }}
+            </div>
+          </div>
+          <div
+            class="flex align-items-center justify-content-center border-round"
+            style="
+              width: 3rem;
+              height: 3rem;
+              background-color: rgba(102, 187, 106, 0.1);
+            "
+          >
+            <i class="pi pi-bolt text-xl" style="color: #66bb6a"></i>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-color-secondary">
+          {{ dashboard.total_activity_minutes_last30_days }} total minutes
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-4">
+      <p-card styleClass="shadow-2">
+        <div class="flex align-items-center justify-content-between">
+          <div>
+            <span class="block text-color-secondary font-medium mb-1"
+              >Feedings (30d)</span
+            >
+            <div class="text-3xl font-bold" style="color: #ffa726">
+              {{ dashboard.total_feedings_last30_days }}
+            </div>
+          </div>
+          <div
+            class="flex align-items-center justify-content-center border-round"
+            style="
+              width: 3rem;
+              height: 3rem;
+              background-color: rgba(255, 167, 38, 0.1);
+            "
+          >
+            <i class="pi pi-apple text-xl" style="color: #ffa726"></i>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-color-secondary">
+          {{ (dashboard.total_food_grams_last30_days / 1000).toFixed(1) }} kg
+          total food
+        </div>
+      </p-card>
+    </div>
+
+    <div *ngIf="loadingDashboard" class="flex justify-content-center py-5">
+      <p-progressSpinner
+        strokeWidth="3"
+        animationDuration="1s"
+      ></p-progressSpinner>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!--  TABS                                                  -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <p-tabView (onTabChange)="onTabChange()" styleClass="full-width-tabs">
+      <!-- ─── Population Tab ──────────────────────────────── -->
+      <p-tabPanel header="Population">
+        <ng-template pTemplate="content">
+          <div
+            *ngIf="loadingPopulation"
+            class="flex justify-content-center py-5"
+          >
+            <p-progressSpinner
+              strokeWidth="3"
+              animationDuration="1s"
+            ></p-progressSpinner>
+          </div>
+
+          <div *ngIf="!loadingPopulation && population" class="grid">
+            <!-- By Category -->
+            <div class="col-12 md:col-6">
+              <p-card header="Animals by Category" styleClass="shadow-1 h-full">
+                <div style="height: 300px" *ngIf="categoryChartData">
+                  <p-chart
+                    type="pie"
+                    [data]="categoryChartData"
+                    [options]="categoryChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- By Status -->
+            <div class="col-12 md:col-6">
+              <p-card header="Animals by Status" styleClass="shadow-1 h-full">
+                <div style="height: 300px" *ngIf="statusChartData">
+                  <p-chart
+                    type="doughnut"
+                    [data]="statusChartData"
+                    [options]="statusChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- By Gender -->
+            <div class="col-12 md:col-6">
+              <p-card header="Animals by Gender" styleClass="shadow-1 h-full">
+                <div style="height: 300px" *ngIf="genderChartData">
+                  <p-chart
+                    type="pie"
+                    [data]="genderChartData"
+                    [options]="genderChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Age Distribution -->
+            <div class="col-12 md:col-6">
+              <p-card header="Age Distribution" styleClass="shadow-1 h-auto">
+                <div style="height: auto" *ngIf="ageChartData">
+                  <p-chart
+                    type="bar"
+                    [data]="ageChartData"
+                    [options]="ageChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Population Summary Table -->
+            <div class="col-12">
+              <p-card header="Population Summary" styleClass="shadow-1">
+                <div class="grid">
+                  <div class="col-12 md:col-4">
+                    <div class="text-center p-3">
+                      <div class="text-4xl font-bold text-primary">
+                        {{ population.total_animals }}
+                      </div>
+                      <div class="text-color-secondary mt-1">Total Animals</div>
+                    </div>
+                  </div>
+                  <div class="col-12 md:col-4">
+                    <div class="text-center p-3">
+                      <div class="text-4xl font-bold" style="color: #66bb6a">
+                        {{ population.by_category.length }}
+                      </div>
+                      <div class="text-color-secondary mt-1">Categories</div>
+                    </div>
+                  </div>
+                  <div class="col-12 md:col-4">
+                    <div class="text-center p-3">
+                      <div class="text-4xl font-bold" style="color: #ffa726">
+                        {{ population.age_distribution.length }}
+                      </div>
+                      <div class="text-color-secondary mt-1">Age Groups</div>
+                    </div>
+                  </div>
+                </div>
+              </p-card>
+            </div>
+          </div>
+        </ng-template>
+      </p-tabPanel>
+
+      <!-- ─── Activities Tab ──────────────────────────────── -->
+      <p-tabPanel header="Activities">
+        <ng-template pTemplate="content">
+          <!-- Period Selector -->
+          <div class="flex align-items-center gap-3 mb-4">
+            <label class="font-medium">Period:</label>
+            <p-select
+              [options]="periodOptions"
+              [(ngModel)]="selectedDays"
+              (onChange)="onPeriodChange()"
+              [style]="{'min-width':'180px'}"
+            ></p-select>
+          </div>
+
+          <div
+            *ngIf="loadingActivities"
+            class="flex justify-content-center py-5"
+          >
+            <p-progressSpinner
+              strokeWidth="3"
+              animationDuration="1s"
+            ></p-progressSpinner>
+          </div>
+
+          <div *ngIf="!loadingActivities" class="grid">
+            <!-- Activity by Type -->
+            <div class="col-12 lg:col-6">
+              <p-card
+                header="Activity Minutes by Type"
+                styleClass="shadow-1 h-full"
+              >
+                <div style="height: auto" *ngIf="activityByTypeChartData">
+                  <p-chart
+                    type="bar"
+                    [data]="activityByTypeChartData"
+                    [options]="activityByTypeChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+                <div
+                  *ngIf="activityByType.length === 0"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>No activity data for this period</p>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Daily Activity Trend -->
+            <div class="col-12 lg:col-6">
+              <p-card
+                header="Daily Activity Trend"
+                styleClass="shadow-1 h-full"
+              >
+                <div
+                  style="height: auto"
+                  *ngIf="activityDailyChartData && activityDailySummary.length > 0"
+                >
+                  <p-chart
+                    type="line"
+                    [data]="activityDailyChartData"
+                    [options]="activityDailyChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+                <div
+                  *ngIf="activityDailySummary.length === 0"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>No daily data for this period</p>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Activity Heatmap -->
+            <div class="col-12">
+              <p-card
+                header="Activity Heatmap (Day / Hour)"
+                styleClass="shadow-1"
+              >
+                <div *ngIf="heatmapGrid.length > 0" class="overflow-auto">
+                  <table
+                    class="w-full"
+                    style="border-collapse: collapse; min-width: 700px"
+                  >
+                    <thead>
+                      <tr>
+                        <th
+                          class="p-2 text-left text-sm font-medium text-color-secondary"
+                          style="width: 60px"
+                        ></th>
+                        <th
+                          *ngFor="let h of hourLabels; let i = index"
+                          class="p-1 text-center text-xs text-color-secondary"
+                          style="min-width: 28px"
+                        >
+                          {{ i % 3 === 0 ? h.split(':')[0] : '' }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let row of heatmapGrid; let dayIdx = index">
+                        <td
+                          class="p-2 text-sm font-medium text-color-secondary"
+                        >
+                          {{ dayLabels[dayIdx] }}
+                        </td>
+                        <td
+                          *ngFor="let val of row; let hourIdx = index"
+                          class="p-1 text-center"
+                          [pTooltip]="dayLabels[dayIdx] + ' ' + hourLabels[hourIdx] + ': ' + val + ' activities'"
+                          tooltipPosition="top"
+                        >
+                          <div
+                            class="border-round"
+                            [style.background-color]="getHeatmapColor(val)"
+                            [style.width]="'24px'"
+                            [style.height]="'24px'"
+                            [style.margin]="'0 auto'"
+                            [style.cursor]="'default'"
+                          ></div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div
+                    class="flex align-items-center gap-2 mt-3 justify-content-end"
+                  >
+                    <span class="text-xs text-color-secondary">Less</span>
+                    <div
+                      class="border-round"
+                      style="
+                        width: 20px;
+                        height: 20px;
+                        background-color: #f5f5f5;
+                      "
+                    ></div>
+                    <div
+                      class="border-round"
+                      style="
+                        width: 20px;
+                        height: 20px;
+                        background-color: rgb(200, 230, 245);
+                      "
+                    ></div>
+                    <div
+                      class="border-round"
+                      style="
+                        width: 20px;
+                        height: 20px;
+                        background-color: rgb(133, 198, 245);
+                      "
+                    ></div>
+                    <div
+                      class="border-round"
+                      style="
+                        width: 20px;
+                        height: 20px;
+                        background-color: rgb(66, 165, 245);
+                      "
+                    ></div>
+                    <span class="text-xs text-color-secondary">More</span>
+                  </div>
+                </div>
+                <div
+                  *ngIf="heatmapGrid.length === 0 || heatmapMaxValue === 0"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>No heatmap data for this period</p>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Top Active Animals -->
+            <div class="col-12">
+              <p-card header="Top Active Animals" styleClass="shadow-1">
+                <p-table
+                  [value]="topAnimals"
+                  [rows]="10"
+                  *ngIf="topAnimals.length > 0"
+                  styleClass="p-datatable-sm p-datatable-striped"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>#</th>
+                      <th>Animal</th>
+                      <th>Total Minutes</th>
+                      <th>Activities</th>
+                      <th>Avg Min/Activity</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-animal let-i="rowIndex">
+                    <tr>
+                      <td>
+                        <p-tag
+                          [value]="(i + 1).toString()"
+                          [severity]="i === 0 ? 'warn' : (i === 1 ? 'info' : (i === 2 ? 'success' : 'secondary'))"
+                        >
+                        </p-tag>
+                      </td>
+                      <td class="font-medium">
+                        {{ getAnimalName(animal.animal_id) }}
+                      </td>
+                      <td>{{ animal.total_minutes }} min</td>
+                      <td>{{ animal.activity_count }}</td>
+                      <td>
+                        {{ (animal.total_minutes /
+                        animal.activity_count).toFixed(1) }} min
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+                <div
+                  *ngIf="topAnimals.length === 0"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>No activity data for this period</p>
+                </div>
+              </p-card>
+            </div>
+          </div>
+        </ng-template>
+      </p-tabPanel>
+
+      <!-- ─── Feeding Tab ─────────────────────────────────── -->
+      <p-tabPanel header="Feeding">
+        <ng-template pTemplate="content">
+          <!-- Period Selector -->
+          <div class="flex align-items-center gap-3 mb-4">
+            <label class="font-medium">Period:</label>
+            <p-select
+              [options]="periodOptions"
+              [(ngModel)]="selectedDays"
+              (onChange)="onPeriodChange()"
+              [style]="{'min-width':'180px'}"
+            ></p-select>
+          </div>
+
+          <div *ngIf="loadingFeeding" class="flex justify-content-center py-5">
+            <p-progressSpinner
+              strokeWidth="3"
+              animationDuration="1s"
+            ></p-progressSpinner>
+          </div>
+
+          <div *ngIf="!loadingFeeding" class="grid">
+            <!-- Row: Charts -->
+            <div class="col-12 md:col-6">
+              <p-card
+                header="Food Consumption by Type"
+                styleClass="shadow-1 h-full"
+              >
+                <div
+                  style="height: 350px"
+                  *ngIf="feedingByTypeChartData && feedingByType.length > 0"
+                >
+                  <p-chart
+                    type="doughnut"
+                    [data]="feedingByTypeChartData"
+                    [options]="feedingByTypeChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  >
+                  </p-chart>
+                </div>
+
+                <div
+                  *ngIf="feedingByType.length === 0"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>No feeding data for this period</p>
+                </div>
+              </p-card>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <p-card header="Daily Feeding Trend" styleClass="shadow-1">
+                <div
+                  *ngIf="feedingDailyChartData && feedingDailySummary.length > 0" style="height: auto"
+                >
+                  <p-chart
+                    type="line"
+                    [data]="feedingDailyChartData"
+                    [options]="feedingDailyChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  >
+                  </p-chart>
+                </div>
+
+                <div
+                  *ngIf="feedingDailySummary.length === 0"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>No daily feeding data for this period</p>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Feeding Stats Table (full width) -->
+            <div class="col-12" *ngIf="feedingByType.length > 0">
+              <p-card header="Food Type Breakdown" styleClass="shadow-1">
+                <p-table
+                  [value]="feedingByType"
+                  styleClass="p-datatable-sm p-datatable-striped"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Food Type</th>
+                      <th>Total Grams</th>
+                      <th>Total Kg</th>
+                      <th>Feedings</th>
+                      <th>Avg per Feeding</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-item>
+                    <tr>
+                      <td>
+                        <p-tag
+                          [value]="getFoodLabel(item.food_type)"
+                          severity="info"
+                        >
+                        </p-tag>
+                      </td>
+                      <td>{{ item.total_grams.toFixed(0) }} g</td>
+                      <td>{{ (item.total_grams / 1000).toFixed(2) }} kg</td>
+                      <td>{{ item.count }}</td>
+                      <td>
+                        {{ (item.total_grams / item.count).toFixed(1) }} g
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-card>
+            </div>
+          </div>
+        </ng-template>
+      </p-tabPanel>
+
+      <!-- ─── Health Tab ──────────────────────────────────── -->
+      <p-tabPanel header="Health" styleClass="full-width-panel">
+        <ng-template pTemplate="content">
+          <!-- Animal and Period Selector -->
+          <div class="flex flex-wrap align-items-center gap-3 mb-4">
+            <div class="flex align-items-center gap-2">
+              <label class="font-medium">Animal:</label>
+              <p-select
+                [options]="animals"
+                [(ngModel)]="selectedAnimalId"
+                placeholder="Select an animal"
+                (onChange)="onAnimalChange()"
+                [filter]="true"
+                filterBy="label"
+                [style]="{'min-width':'250px'}"
+              ></p-select>
+            </div>
+            <div class="flex align-items-center gap-2">
+              <label class="font-medium">Period:</label>
+              <p-select
+                [options]="periodOptions"
+                [(ngModel)]="healthDays"
+                (onChange)="onHealthDaysChange()"
+                [style]="{'min-width':'180px'}"
+              ></p-select>
+            </div>
+          </div>
+
+          <div
+            *ngIf="!selectedAnimalId"
+            class="text-center py-6 text-color-secondary"
+          >
+            <i class="pi pi-search text-5xl mb-3" style="display: block"></i>
+            <p class="text-lg">Select an animal to view health trends</p>
+          </div>
+
+          <div
+            *ngIf="loadingHealth && selectedAnimalId"
+            class="flex justify-content-center py-5"
+          >
+            <p-progressSpinner
+              strokeWidth="3"
+              animationDuration="1s"
+            ></p-progressSpinner>
+          </div>
+
+          <div *ngIf="selectedAnimalId && !loadingHealth" class="grid">
+            <!-- Weight Trend -->
+            <div class="col-12 lg:col-6">
+              <p-card header="Weight Trend" styleClass="shadow-1 h-full">
+                <div style="height: auto" *ngIf="weightChartData">
+                  <p-chart
+                    type="line"
+                    [data]="weightChartData"
+                    [options]="weightChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+                <div
+                  *ngIf="!weightChartData"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>No weight data recorded for this animal in this period</p>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- Energy & Mood Trend -->
+            <div class="col-12 lg:col-6">
+              <p-card header="Energy & Mood Trend" styleClass="shadow-1 h-full">
+                <div style="height: auto" *ngIf="energyMoodChartData">
+                  <p-chart
+                    type="line"
+                    [data]="energyMoodChartData"
+                    [options]="energyMoodChartOptions"
+                    [style]="{'height':'100%','width':'100%'}"
+                  ></p-chart>
+                </div>
+                <div
+                  *ngIf="!energyMoodChartData"
+                  class="text-center py-5 text-color-secondary"
+                >
+                  <i class="pi pi-info-circle text-4xl mb-2"></i>
+                  <p>
+                    No energy/mood data recorded for this animal in this period
+                  </p>
+                </div>
+              </p-card>
+            </div>
+          </div>
+        </ng-template>
+      </p-tabPanel>
+
+      <!-- ─── Reports Tab ───────────────────────────────────── -->
+      <p-tabPanel header="Reports">
+        <ng-template pTemplate="content">
+          <div class="grid">
+            <!-- ── PDF Reports ─────────────────────────────── -->
+            <div class="col-12">
+              <h3 class="mt-0 mb-3">
+                <i class="pi pi-file-pdf mr-2" style="color: #ef5350"></i>PDF
+                Reports
+              </h3>
+              <p class="text-color-secondary mt-0 mb-3">
+                Generate PDF reports by choosing a report type and period.
+              </p>
+            </div>
+
+            <div class="col-12">
+              <p-card styleClass="shadow-1">
+                <div class="flex flex-wrap align-items-end gap-3">
+                  <div class="flex flex-column gap-1">
+                    <label class="font-medium text-sm">Report Section</label>
+                    <p-select
+                      [options]="reportSectionOptions"
+                      [(ngModel)]="selectedReportSection"
+                      [style]="{'min-width':'200px'}"
+                    ></p-select>
+                  </div>
+                  <div class="flex flex-column gap-1">
+                    <label class="font-medium text-sm">Period</label>
+                    <p-select
+                      [options]="reportPeriodOptions"
+                      [(ngModel)]="selectedReportPeriod"
+                      [style]="{'min-width':'200px'}"
+                    ></p-select>
+                  </div>
+                  <p-button
+                    icon="pi pi-download"
+                    label="Download PDF"
+                    [loading]="downloadingPdf"
+                    (onClick)="downloadReportPdf()"
+                    severity="danger"
+                  >
+                  </p-button>
+                </div>
+
+                <p-divider></p-divider>
+
+                <!-- Quick download cards -->
+                <div class="grid">
+                  <ng-container *ngFor="let s of reportSectionOptions">
+                    <div
+                      class="col-12 md:col-6 lg:col-3"
+                      *ngIf="s.value !== 'all'"
+                    >
+                      <div
+                        class="p-3 border-round border-1 surface-border cursor-pointer hover:surface-hover"
+                        style="transition: background-color 0.2s"
+                        (click)="selectedReportSection = s.value; selectedReportPeriod = 'monthly'; downloadReportPdf()"
+                      >
+                        <div class="flex align-items-center gap-2 mb-2">
+                          <i
+                            class="pi text-lg"
+                            [ngClass]="{
+                             'pi-users': s.value === 'population',
+                             'pi-bolt': s.value === 'activities',
+                             'pi-apple': s.value === 'feeding',
+                             'pi-heart': s.value === 'health'
+                           }"
+                            [style.color]="s.value === 'population' ? '#42A5F5' :
+                                          s.value === 'activities' ? '#66BB6A' :
+                                          s.value === 'feeding' ? '#FFA726' : '#AB47BC'"
+                          >
+                          </i>
+                          <span class="font-bold">{{ s.label }}</span>
+                        </div>
+                        <span class="text-color-secondary text-sm"
+                          >Quick monthly report</span
+                        >
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </p-card>
+            </div>
+
+            <!-- ── Data Export ─────────────────────────────── -->
+            <div class="col-12 mt-4">
+              <h3 class="mt-0 mb-3">
+                <i class="pi pi-file-export mr-2" style="color: #66bb6a"></i
+                >Data Export
+              </h3>
+              <p class="text-color-secondary mt-0 mb-3">
+                Export raw data in CSV or Excel format for further analysis.
+              </p>
+            </div>
+
+            <div class="col-12">
+              <p-card styleClass="shadow-1">
+                <p-table
+                  [value]="[
+                  { name: 'Activities', description: 'All activity records (type, duration, animal, date)', type: 'activities' },
+                  { name: 'Feedings', description: 'All feeding records (food type, quantity, meal time, consumption)', type: 'feedings' },
+                  { name: 'Measurements', description: 'All daily measurements (weight, energy level, mood)', type: 'measurements' }
+                ]"
+                  styleClass="p-datatable-sm"
+                >
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th style="width: 20%">Data</th>
+                      <th style="width: 45%">Description</th>
+                      <th style="width: 35%">Export</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-row>
+                    <tr>
+                      <td class="font-bold">{{ row.name }}</td>
+                      <td class="text-color-secondary">
+                        {{ row.description }}
+                      </td>
+                      <td>
+                        <div class="flex gap-2">
+                          <p-button
+                            icon="pi pi-file"
+                            label="CSV"
+                            severity="success"
+                            [outlined]="true"
+                            size="small"
+                            [loading]="row.type === 'activities' ? downloadingActivitiesCsv :
+                                             row.type === 'feedings' ? downloadingFeedingsCsv :
+                                             downloadingMeasurementsCsv"
+                            (onClick)="exportCsv(row.type)"
+                          >
+                          </p-button>
+                          <p-button
+                            icon="pi pi-file-excel"
+                            label="Excel"
+                            severity="info"
+                            [outlined]="true"
+                            size="small"
+                            [loading]="row.type === 'activities' ? downloadingActivitiesExcel :
+                                             row.type === 'feedings' ? downloadingFeedingsExcel :
+                                             downloadingMeasurementsExcel"
+                            (onClick)="exportExcel(row.type)"
+                          >
+                          </p-button>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-card>
+            </div>
+          </div>
+        </ng-template>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>

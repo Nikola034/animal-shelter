@@ -1,15 +1,15 @@
-// Food type options for dropdown (string-based, not enum)
+// Food type enum values matching backend FoodType enum
 export const FOOD_TYPE_OPTIONS: { label: string; value: string }[] = [
-  { label: 'Dry Food', value: 'dry_food' },
-  { label: 'Wet Food', value: 'wet_food' },
-  { label: 'Raw Food', value: 'raw_food' },
-  { label: 'Vegetables', value: 'vegetables' },
-  { label: 'Fruits', value: 'fruits' },
-  { label: 'Treats', value: 'treats' },
-  { label: 'Supplements', value: 'supplements' },
-  { label: 'Seeds', value: 'seeds' },
-  { label: 'Hay', value: 'hay' },
-  { label: 'Pellets', value: 'pellets' }
+  { label: 'Dry Food', value: 'DRY_FOOD' },
+  { label: 'Wet Food', value: 'WET_FOOD' },
+  { label: 'Raw Food', value: 'RAW_FOOD' },
+  { label: 'Vegetables', value: 'VEGETABLES' },
+  { label: 'Fruits', value: 'FRUITS' },
+  { label: 'Treats', value: 'TREATS' },
+  { label: 'Supplements', value: 'SUPPLEMENTS' },
+  { label: 'Seeds', value: 'SEEDS' },
+  { label: 'Hay', value: 'HAY' },
+  { label: 'Pellets', value: 'PELLETS' }
 ];
 
 export const getFoodTypeLabel = (value: string): string => {
@@ -19,16 +19,16 @@ export const getFoodTypeLabel = (value: string): string => {
 
 export const getFoodTypeSeverity = (type: string): string => {
   switch (type) {
-    case 'dry_food': return 'info';
-    case 'wet_food': return 'success';
-    case 'raw_food': return 'warn';
-    case 'vegetables': return 'success';
-    case 'fruits': return 'warn';
-    case 'treats': return 'contrast';
-    case 'supplements': return 'secondary';
-    case 'seeds': return 'info';
-    case 'hay': return 'warn';
-    case 'pellets': return 'info';
+    case 'DRY_FOOD': return 'info';
+    case 'WET_FOOD': return 'success';
+    case 'RAW_FOOD': return 'warn';
+    case 'VEGETABLES': return 'success';
+    case 'FRUITS': return 'warn';
+    case 'TREATS': return 'contrast';
+    case 'SUPPLEMENTS': return 'secondary';
+    case 'SEEDS': return 'info';
+    case 'HAY': return 'warn';
+    case 'PELLETS': return 'info';
     default: return 'info';
   }
 };

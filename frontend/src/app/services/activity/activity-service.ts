@@ -76,7 +76,6 @@ export class ActivityService {
     quantity_grams: number;
     meal_time: string;  // ISO datetime
     notes: string | null;
-    consumed_fully: boolean | null;
   }): Observable<FeedingRecordResponse> {
     return this.http.post<FeedingRecordResponse>(this.feedingUrl, data);
   }
