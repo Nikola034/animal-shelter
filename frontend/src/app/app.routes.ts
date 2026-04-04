@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './services/auth/auth-guard';
 import { AdminGuard } from './services/auth/admin-guard';
 import { CaretakerGuard } from './services/auth/caretaker-guard';
+import { AnalyticsGuard } from './services/auth/analytics-guard';
 
 export const routes: Routes = [
   // Public routes
@@ -51,6 +52,11 @@ export const routes: Routes = [
         path: 'activities',
         loadComponent: () => import('./components/activities/daily-tracking/daily-tracking').then(m => m.DailyTracking),
         canActivate: [CaretakerGuard]
+      },
+      {
+        path: 'analytics',
+        loadComponent: () => import('./components/analytics/analytics-dashboard/analytics-dashboard').then(m => m.AnalyticsDashboard),
+        canActivate: [AnalyticsGuard]
       }
     ]
   },

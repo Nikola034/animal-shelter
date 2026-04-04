@@ -8,7 +8,6 @@ import { DropdownModule } from 'primeng/dropdown';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextarea } from 'primeng/inputtextarea';
 import { ButtonModule } from 'primeng/button';
 import { SliderModule } from 'primeng/slider';
 import { TagModule } from 'primeng/tag';
@@ -31,18 +30,18 @@ import {
 } from '../../../dto/activity/DailyRecordResponse';
 import { FOOD_TYPE_OPTIONS, getFoodTypeLabel, getFoodTypeSeverity } from '../../../dto/activity/FoodType';
 
-// Activity type suggestions
+// Activity type enum values matching backend ActivityType enum
 export const ACTIVITY_TYPE_OPTIONS: { label: string; value: string }[] = [
-  { label: 'Walking', value: 'walking' },
-  { label: 'Playing', value: 'playing' },
-  { label: 'Training', value: 'training' },
-  { label: 'Social Interaction', value: 'social_interaction' },
-  { label: 'Wheel Running', value: 'wheel_running' },
-  { label: 'Digging', value: 'digging' },
-  { label: 'Swimming', value: 'swimming' },
-  { label: 'Grooming', value: 'grooming' },
-  { label: 'Running', value: 'running' },
-  { label: 'Climbing', value: 'climbing' }
+  { label: 'Walking', value: 'WALKING' },
+  { label: 'Playing', value: 'PLAYING' },
+  { label: 'Training', value: 'TRAINING' },
+  { label: 'Social Interaction', value: 'SOCIAL_INTERACTION' },
+  { label: 'Wheel Running', value: 'WHEEL_RUNNING' },
+  { label: 'Digging', value: 'DIGGING' },
+  { label: 'Swimming', value: 'SWIMMING' },
+  { label: 'Grooming', value: 'GROOMING' },
+  { label: 'Running', value: 'RUNNING' },
+  { label: 'Climbing', value: 'CLIMBING' }
 ];
 
 @Component({
@@ -56,7 +55,6 @@ export const ACTIVITY_TYPE_OPTIONS: { label: string; value: string }[] = [
     DatePickerModule,
     InputNumberModule,
     InputTextModule,
-    InputTextarea,
     ButtonModule,
     SliderModule,
     TagModule,
@@ -106,7 +104,6 @@ export class DailyTracking implements OnInit, OnDestroy {
   newQuantityGrams: number | null = null;
   newMealTime: Date | null = null;
   newFeedingNotes: string = '';
-  newConsumedFully: boolean = false;
   addingFeeding = false;
   foodTypeOptions = FOOD_TYPE_OPTIONS;
 
@@ -272,7 +269,7 @@ export class DailyTracking implements OnInit, OnDestroy {
 
   confirmDeleteActivity(activity: ActivityRecordResponse): void {
     this.confirmationService.confirm({
-      message: `Remove "${activity.activity_type}" activity?`,
+      message: `Remove "${this.getActivityTypeLabel(activity.activity_type)}" activity?`,
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
@@ -320,8 +317,7 @@ export class DailyTracking implements OnInit, OnDestroy {
       food_type: this.newFoodType,
       quantity_grams: this.newQuantityGrams,
       meal_time: mealTime,
-      notes: this.newFeedingNotes || null,
-      consumed_fully: this.newConsumedFully || null
+      notes: this.newFeedingNotes || null
     }).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (created) => {
@@ -379,7 +375,6 @@ export class DailyTracking implements OnInit, OnDestroy {
     this.newQuantityGrams = null;
     this.newMealTime = null;
     this.newFeedingNotes = '';
-    this.newConsumedFully = false;
   }
 
   // ── Helpers ──────────────────────────────────────────────
