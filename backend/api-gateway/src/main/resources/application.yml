@@ -50,6 +50,7 @@ gateway:
       - /api/auth/login
       - /api/auth/register
       - /api/auth/refresh-token
+      - /api/animals/images/**
       - /actuator/**
   rate-limit:
     requests-per-second: 20
