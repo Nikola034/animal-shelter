@@ -3,6 +3,9 @@ package com.animalshelter.animalregistry.service;
 import com.animalshelter.animalregistry.config.UserContext;
 import com.animalshelter.animalregistry.dto.*;
 import com.animalshelter.animalregistry.exception.ResourceNotFoundException;
+import com.animalshelter.animalregistry.messaging.AnimalEventPublisher;
+import com.animalshelter.animalregistry.messaging.event.AnimalRegisteredEvent;
+import com.animalshelter.animalregistry.messaging.event.AnimalStatusChangedEvent;
 import com.animalshelter.animalregistry.model.Animal;
 import com.animalshelter.animalregistry.model.AnimalCategory;
 import com.animalshelter.animalregistry.model.AnimalStatus;
@@ -27,6 +30,7 @@ public class AnimalService {
     private final MongoTemplate mongoTemplate;
     private final ImageStorageService imageStorageService;
     private final UserContext userContext;
+    private final AnimalEventPublisher eventPublisher;
     private final int maxImagesPerAnimal;
 
     public AnimalService(
@@ -35,6 +39,7 @@ public class AnimalService {
             MongoTemplate mongoTemplate,
             ImageStorageService imageStorageService,
             UserContext userContext,
+            AnimalEventPublisher eventPublisher,
             @Value("${app.upload.max-images-per-animal}") int maxImagesPerAnimal
     ) {
         this.animalRepository = animalRepository;
@@ -42,6 +47,7 @@ public class AnimalService {
         this.mongoTemplate = mongoTemplate;
         this.imageStorageService = imageStorageService;
         this.userContext = userContext;
+        this.eventPublisher = eventPublisher;
         this.maxImagesPerAnimal = maxImagesPerAnimal;
     }
 
@@ -81,6 +87,20 @@ public class AnimalService {
         animal.getStatusHistory().add(initialStatus);
 
         animal = animalRepository.save(animal);
+
+        eventPublisher.publishAnimalRegistered(AnimalRegisteredEvent.builder()
+                .animalId(animal.getId())
+                .name(animal.getName())
+                .category(animal.getCategory().name())
+                .breed(animal.getBreed())
+                .gender(animal.getGender() != null ? animal.getGender().name() : null)
+                .ageMonths(animal.getAgeMonths())
+                .weight(animal.getWeight())
+                .registeredBy(userContext.getUserId())
+                .registeredByUsername(userContext.getUsername())
+                .timestamp(now)
+                .build());
+
         return AnimalResponse.fromEntity(animal);
     }
 
@@ -153,6 +173,8 @@ public class AnimalService {
         Animal animal = animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal not found with id: " + id));
 
+        AnimalStatus previousStatus = animal.getStatus();
+
         StatusHistoryEntry entry = StatusHistoryEntry.builder()
                 .status(request.status())
                 .changedAt(LocalDateTime.now())
@@ -166,6 +188,18 @@ public class AnimalService {
         animal.setUpdatedAt(LocalDateTime.now());
 
         animal = animalRepository.save(animal);
+
+        eventPublisher.publishAnimalStatusChanged(AnimalStatusChangedEvent.builder()
+                .animalId(animal.getId())
+                .animalName(animal.getName())
+                .previousStatus(previousStatus.name())
+                .newStatus(request.status().name())
+                .changedBy(userContext.getUserId())
+                .changedByUsername(userContext.getUsername())
+                .note(request.note())
+                .timestamp(LocalDateTime.now())
+                .build());
+
         return AnimalResponse.fromEntity(animal);
     }
 
