@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/animal_shelter_users
+    username: postgres
+    password: admin
