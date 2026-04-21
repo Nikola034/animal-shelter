@@ -43,4 +43,16 @@ export class UserService {
   deleteUser(id: string): Observable<MessageResponse> {
     return this.http.delete<MessageResponse>(`${this.baseUrl}/${id}`);
   }
+
+  updateMyProfile(data: { name?: string; email?: string }): Observable<UserResponse> {
+    return this.http.put<UserResponse>(`${this.baseUrl}/me/profile`, data);
+  }
+
+  changeMyPassword(currentPassword: string, newPassword: string): Observable<MessageResponse> {
+    return this.http.put<MessageResponse>(`${this.baseUrl}/me/password`, { currentPassword, newPassword });
+  }
+
+  updateUserProfile(id: string, data: { name?: string; email?: string }): Observable<UserResponse> {
+    return this.http.put<UserResponse>(`${this.baseUrl}/${id}/profile`, data);
+  }
 }

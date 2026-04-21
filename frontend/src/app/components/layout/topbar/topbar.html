@@ -10,7 +10,9 @@
   <ng-template #end>
     <div class="flex align-items-center gap-2 md:gap-3">
       <p-tag [value]="role" [severity]="roleSeverity" [rounded]="true"></p-tag>
-      <span class="font-semibold topbar-username">{{ username }}</span>
+      <span class="font-semibold topbar-username cursor-pointer hover:text-primary" (click)="goToProfile()">{{ username }}</span>
+      <p-button icon="pi pi-user" [text]="true" [rounded]="true" severity="secondary"
+                (onClick)="goToProfile()" pTooltip="My Profile" tooltipPosition="bottom"></p-button>
       <p-button icon="pi pi-sign-out" [label]="'Logout'" [text]="true" severity="secondary"
                 (onClick)="onLogout()" styleClass="topbar-logout-btn"></p-button>
     </div>

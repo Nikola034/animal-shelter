@@ -105,18 +105,19 @@
         </div>
       </p-card>
     </div>
+  </div>
 
-    <div *ngIf="loadingDashboard" class="flex justify-content-center py-5">
-      <p-progressSpinner
-        strokeWidth="3"
-        animationDuration="1s"
-      ></p-progressSpinner>
-    </div>
+  <div *ngIf="loadingDashboard" class="flex justify-content-center py-5">
+    <p-progressSpinner
+      strokeWidth="3"
+      animationDuration="1s"
+    ></p-progressSpinner>
+  </div>
 
-    <!-- ═══════════════════════════════════════════════════════ -->
-    <!--  TABS                                                  -->
-    <!-- ═══════════════════════════════════════════════════════ -->
-    <p-tabView (onTabChange)="onTabChange()" styleClass="full-width-tabs">
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  TABS                                                  -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <p-tabView (onTabChange)="onTabChange()" styleClass="full-width-tabs">
       <!-- ─── Population Tab ──────────────────────────────── -->
       <p-tabPanel header="Population">
         <ng-template pTemplate="content">
@@ -566,7 +567,7 @@
       </p-tabPanel>
 
       <!-- ─── Health Tab ──────────────────────────────────── -->
-      <p-tabPanel header="Health" styleClass="full-width-panel">
+      <p-tabPanel header="Health">
         <ng-template pTemplate="content">
           <!-- Animal and Period Selector -->
           <div class="flex flex-wrap align-items-center gap-3 mb-4">
@@ -813,6 +814,5 @@
           </div>
         </ng-template>
       </p-tabPanel>
-    </p-tabView>
-  </div>
+  </p-tabView>
 </div>

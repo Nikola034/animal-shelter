@@ -149,7 +149,9 @@ Sistem koristi API Gateway kao centralnu tačku pristupa kroz koju prolazi sva k
 - Prikaz osnovnih informacija i fotografije
 - **RAG pretraga (natural language search)**:
   - Korisnik unosi upit na prirodnom jeziku (npr. "mirna mačka pogodna za stan", "energičan pas koji voli decu")
+  - Opis svake životinje se pri registraciji i ažuriranju vektorizuje i čuva u vektorskoj bazi (Weaviate)
   - Na osnovu korisničkog upita, sistem vrši semantičku pretragu nad vektorizovanim opisima i pronalazi najrelevantnije životinje
+  - LLM (Anthropic Claude API) na osnovu pronađenih rezultata generiše konačan odgovor sa objašnjenjem zašto je svaka životinja predložena
   - Rezultati se rangiraju po relevantnosti
 
 ### Registracija nove životinje (Upravnik, Admin)
@@ -221,6 +223,8 @@ Sistem koristi API Gateway kao centralnu tačku pristupa kroz koju prolazi sva k
 - **Autentifikacija**: Spring Security + JWT
 - **Build tool**: Maven
 - **Dokumentacija API-ja**: Springdoc OpenAPI (Swagger)
+- **Vektorska baza**: Weaviate (semantička pretraga za RAG)
+- **LLM integracija**: Anthropic Claude API (generisanje odgovora na osnovu pretrage)
 - **Embedding**: Weaviate text2vec modul (vektorizacija opisa životinja)
 
 ### Kontrola verzija

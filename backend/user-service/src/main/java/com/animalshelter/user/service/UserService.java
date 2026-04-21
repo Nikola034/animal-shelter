@@ -6,6 +6,7 @@ import com.animalshelter.user.model.User;
 import com.animalshelter.user.model.UserStatus;
 import com.animalshelter.user.repository.RefreshTokenRepository;
 import com.animalshelter.user.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +18,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository) {
+    public UserService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserResponse getCurrentUser(String userId) {
@@ -77,6 +80,40 @@ public class UserService {
         user = userRepository.save(user);
 
         return UserResponse.fromEntity(user);
+    }
+
+    @Transactional
+    public UserResponse updateProfile(UUID id, UpdateProfileRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        if (request.name() != null) {
+            user.setName(request.name());
+        }
+        if (request.email() != null && !request.email().isBlank()) {
+            if (!request.email().equals(user.getEmail()) && userRepository.existsByEmail(request.email())) {
+                throw new IllegalArgumentException("Email is already in use");
+            }
+            user.setEmail(request.email());
+        }
+
+        user = userRepository.save(user);
+        return UserResponse.fromEntity(user);
+    }
+
+    @Transactional
+    public MessageResponse changePassword(UUID id, ChangePasswordRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+
+        return new MessageResponse(true, "Password changed successfully");
     }
 
     @Transactional
