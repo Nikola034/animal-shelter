@@ -28,6 +28,7 @@ export interface DecodedToken {
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'animal_shelter_tokens';
+  private loggingOut = false;
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -89,15 +90,13 @@ export class AuthService {
   }
 
   logout(): void {
-    this.http.post(`${environment.apiGatewayUrl}/auth/logout`, {}).subscribe({
-      complete: () => {
-        this.clearAuthData();
-        this.router.navigate(['']);
-      },
-      error: () => {
-        this.clearAuthData();
-        this.router.navigate(['']);
-      }
+    if (this.loggingOut) {
+      return;
+    }
+    this.loggingOut = true;
+    this.clearAuthData();
+    this.router.navigate(['']).then(() => {
+      this.loggingOut = false;
     });
   }
 
@@ -185,8 +184,7 @@ export class AuthService {
         }),
         catchError((error) => {
           console.error('Token refresh failed:', error);
-          this.clearAuthData();
-          this.router.navigate(['']);
+          this.logout();
           return throwError(() => error);
         })
       );
