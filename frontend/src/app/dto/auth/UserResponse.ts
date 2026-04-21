@@ -4,6 +4,7 @@ import { UserStatus } from './UserStatus';
 export interface UserResponse {
   id: string;
   username: string;
+  name: string | null;
   email: string;
   role: UserRole;
   status: UserStatus;

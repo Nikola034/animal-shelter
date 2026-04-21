@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { AuthService } from '../../../services/auth/auth-service';
 import { getRoleSeverity } from '../../../dto/auth/UserRole';
 
@@ -13,7 +15,8 @@ import { getRoleSeverity } from '../../../dto/auth/UserRole';
     CommonModule,
     ToolbarModule,
     ButtonModule,
-    TagModule
+    TagModule,
+    TooltipModule
   ],
   templateUrl: 'topbar.html'
 })
@@ -21,7 +24,7 @@ export class Topbar {
 
   @Output() toggleSidebar = new EventEmitter<void>();
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService, private router: Router) {}
 
   get username(): string {
     return this.authService.getUsernameFromToken() || 'User';
@@ -37,6 +40,10 @@ export class Topbar {
 
   onToggleSidebar(): void {
     this.toggleSidebar.emit();
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['/app/profile']);
   }
 
   onLogout(): void {

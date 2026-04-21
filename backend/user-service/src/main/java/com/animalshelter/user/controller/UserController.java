@@ -27,6 +27,35 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/me/profile")
+    public ResponseEntity<UserResponse> updateMyProfile(
+            Authentication authentication,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+        UUID userId = UUID.fromString(authentication.getPrincipal().toString());
+        UserResponse response = userService.updateProfile(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/me/password")
+    public ResponseEntity<MessageResponse> changeMyPassword(
+            Authentication authentication,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        UUID userId = UUID.fromString(authentication.getPrincipal().toString());
+        MessageResponse response = userService.changePassword(userId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<UserResponse> updateUserProfile(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+        UserResponse response = userService.updateProfile(id, request);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<UsersListResponse> getAllUsers(
             @RequestParam(required = false) UserStatus status

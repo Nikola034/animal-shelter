@@ -10,6 +10,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { UserService } from '../../../services/user/user-service';
@@ -29,7 +32,10 @@ import { UserStatus, USER_STATUS_OPTIONS, getStatusSeverity } from '../../../dto
     DropdownModule,
     ToastModule,
     ConfirmDialogModule,
-    CardModule
+    CardModule,
+    DialogModule,
+    InputTextModule,
+    TooltipModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: 'user-management.html'
@@ -49,6 +55,13 @@ export class UserManagement implements OnInit, OnDestroy {
   // Dropdown options for inline editing
   roleOptions = USER_ROLE_OPTIONS;
   statusOptions = USER_STATUS_OPTIONS;
+
+  // Edit dialog
+  editDialogVisible = false;
+  editingUser: UserResponse | null = null;
+  editName = '';
+  editEmail = '';
+  savingEdit = false;
 
   private destroy$ = new Subject<void>();
 
@@ -173,6 +186,48 @@ export class UserManagement implements OnInit, OnDestroy {
             severity: 'error',
             summary: 'Error',
             detail: err.error?.message || 'Failed to delete user',
+            life: 5000
+          });
+        }
+      });
+  }
+
+  openEditDialog(user: UserResponse): void {
+    this.editingUser = user;
+    this.editName = user.name || '';
+    this.editEmail = user.email;
+    this.editDialogVisible = true;
+  }
+
+  saveUserProfile(): void {
+    if (!this.editingUser) return;
+
+    if (!this.editEmail.trim()) {
+      this.messageService.add({ severity: 'warn', summary: 'Validation', detail: 'Email is required' });
+      return;
+    }
+
+    this.savingEdit = true;
+    this.userService.updateUserProfile(this.editingUser.id, { name: this.editName, email: this.editEmail })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Profile Updated',
+            detail: `${this.editingUser!.username}'s profile has been updated`,
+            life: 3000
+          });
+          this.editDialogVisible = false;
+          this.savingEdit = false;
+          this.loadUsers();
+        },
+        error: (err) => {
+          this.savingEdit = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.message || 'Failed to update profile',
             life: 5000
           });
         }

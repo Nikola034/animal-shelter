@@ -28,6 +28,7 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="username">Username <p-sortIcon field="username"></p-sortIcon></th>
+          <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
           <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
           <th pSortableColumn="role">Role <p-sortIcon field="role"></p-sortIcon></th>
           <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
@@ -41,6 +42,7 @@
           <td>
             <span class="font-semibold">{{ user.username }}</span>
           </td>
+          <td>{{ user.name || '-' }}</td>
           <td>{{ user.email }}</td>
           <td>
             <p-dropdown [options]="roleOptions" [ngModel]="user.role"
@@ -58,15 +60,19 @@
             {{ user.created_at | date:'dd/MM/yyyy HH:mm' }}
           </td>
           <td>
-            <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true"
-                      (onClick)="confirmDelete(user)" pTooltip="Delete user"></p-button>
+            <div class="flex gap-1">
+              <p-button icon="pi pi-pencil" severity="info" [text]="true" [rounded]="true"
+                        (onClick)="openEditDialog(user)" pTooltip="Edit profile"></p-button>
+              <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true"
+                        (onClick)="confirmDelete(user)" pTooltip="Delete user"></p-button>
+            </div>
           </td>
         </tr>
       </ng-template>
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center py-4">
+          <td colspan="7" class="text-center py-4">
             <i class="pi pi-users text-4xl text-color-secondary mb-3 block"></i>
             <span class="text-color-secondary">No users found</span>
           </td>
@@ -77,3 +83,27 @@
 
   </ng-template>
 </p-card>
+
+<!-- Edit User Profile Dialog -->
+<p-dialog header="Edit User Profile" [(visible)]="editDialogVisible" [modal]="true"
+          [style]="{width: '450px'}" [closable]="true">
+  <div *ngIf="editingUser" class="flex flex-column gap-3 pt-2">
+    <div>
+      <label class="block font-medium mb-2">Username</label>
+      <input pInputText [value]="editingUser.username" [disabled]="true" class="w-full" />
+      <small class="text-color-secondary">Username cannot be changed</small>
+    </div>
+    <div>
+      <label class="block font-medium mb-2">Name</label>
+      <input pInputText [(ngModel)]="editName" placeholder="Enter name" class="w-full" />
+    </div>
+    <div>
+      <label class="block font-medium mb-2">Email</label>
+      <input pInputText [(ngModel)]="editEmail" placeholder="Enter email" class="w-full" type="email" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" [text]="true" severity="secondary" (onClick)="editDialogVisible = false"></p-button>
+    <p-button label="Save" icon="pi pi-check" [loading]="savingEdit" (onClick)="saveUserProfile()"></p-button>
+  </ng-template>
+</p-dialog>

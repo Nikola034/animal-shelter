@@ -81,7 +81,7 @@ export class AnimalService {
 
   getImageUrl(imagePath: string): string {
     // Images are served through the API gateway
-    return `${environment.apiGatewayUrl}/animals/images${imagePath}`;
+    return `${environment.apiGatewayUrl}/animals/images/${imagePath}`;
   }
 
   // ── Medical Records ──────────────────────────────────────

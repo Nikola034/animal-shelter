@@ -57,6 +57,10 @@ export const routes: Routes = [
         path: 'analytics',
         loadComponent: () => import('./components/analytics/analytics-dashboard/analytics-dashboard').then(m => m.AnalyticsDashboard),
         canActivate: [AnalyticsGuard]
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./components/profile/profile').then(m => m.Profile)
       }
     ]
   },

@@ -92,6 +92,11 @@ html, body {
   display: block;
 }
 
+/* Analytics TabView full-width fix */
+.full-width-tabs {
+  width: 100%;
+}
+
 /* ── Responsive: Mobile sidebar overlay ───────────────── */
 @media screen and (max-width: 768px) {
   /* Sidebar overlay on mobile */
