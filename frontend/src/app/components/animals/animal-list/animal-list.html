@@ -59,7 +59,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-animal>
-        <tr [pSelectableRow]="animal" class="cursor-pointer">
+        <tr [pSelectableRow]="animal" class="cursor-pointer" (click)="viewAnimal(animal)">
           <td>
             <img *ngIf="animal.image_paths && animal.image_paths.length > 0"
                  [src]="getImageUrl(animal.image_paths[0])"
