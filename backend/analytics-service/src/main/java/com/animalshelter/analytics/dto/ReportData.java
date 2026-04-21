@@ -35,4 +35,5 @@ public class ReportData {
 
     // Health data
     private List<WeightDataPoint> averageWeight;
+    private List<MedicalRecordSummary> medicalRecords;
 }

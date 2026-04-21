@@ -19,6 +19,8 @@ import { MessageService } from 'primeng/api';
 import { AnalyticsService } from '../../../services/analytics/analytics-service';
 import { AnimalService } from '../../../services/animal/animal-service';
 import { AnimalResponse } from '../../../dto/animal/AnimalResponse';
+import { MedicalRecordResponse } from '../../../dto/animal/MedicalRecordResponse';
+import { getMedicalRecordTypeSeverity } from '../../../dto/animal/MedicalRecordType';
 import {
   PopulationOverview,
   ActivityTypeStats,
@@ -116,6 +118,7 @@ export class AnalyticsDashboard implements OnInit, OnDestroy {
   weightChartOptions: any;
   energyMoodChartData: any;
   energyMoodChartOptions: any;
+  medicalRecords: MedicalRecordResponse[] = [];
 
   // Animal name cache for top animals table
   animalNameCache: Map<string, string> = new Map();
@@ -292,12 +295,14 @@ export class AnalyticsDashboard implements OnInit, OnDestroy {
         this.selectedAnimalId,
         this.healthDays,
       ),
+      medical: this.animalService.getMedicalRecords(this.selectedAnimalId),
     })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (result) => {
           this.weightTrend = result.weight;
           this.energyMoodTrend = result.energyMood;
+          this.filterMedicalRecords(result.medical.records);
           this.buildWeightChart();
           this.buildEnergyMoodChart();
           this.loadingHealth = false;
@@ -324,6 +329,17 @@ export class AnalyticsDashboard implements OnInit, OnDestroy {
     if (this.selectedAnimalId) {
       this.loadHealthData();
     }
+  }
+
+  private filterMedicalRecords(records: MedicalRecordResponse[]): void {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - this.healthDays);
+    const cutoffStr = cutoff.toISOString().split('T')[0];
+    this.medicalRecords = records.filter(r => r.date >= cutoffStr);
+  }
+
+  getMedicalTypeSeverity(type: string): string {
+    return getMedicalRecordTypeSeverity(type as any);
   }
 
   // ══════════════════════════════════════════════════════════
