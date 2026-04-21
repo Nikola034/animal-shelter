@@ -70,7 +70,9 @@ public class PdfReportService {
 
             // ── Health Section ─────────────────────────────────
             if (all || "health".equals(section)) {
-                if (data.getAverageWeight() != null && !data.getAverageWeight().isEmpty()) {
+                boolean hasWeight = data.getAverageWeight() != null && !data.getAverageWeight().isEmpty();
+                boolean hasMedical = data.getMedicalRecords() != null && !data.getMedicalRecords().isEmpty();
+                if (hasWeight || hasMedical) {
                     document.newPage();
                     addHealthSection(document, data);
                 }
@@ -398,21 +400,48 @@ public class PdfReportService {
     private void addHealthSection(Document document, ReportData data) throws DocumentException {
         addSectionHeader(document, "Health Overview");
 
-        document.add(new Paragraph("Average Weight Trend (all animals)", BOLD_FONT));
-        document.add(Chunk.NEWLINE);
+        if (data.getAverageWeight() != null && !data.getAverageWeight().isEmpty()) {
+            document.add(new Paragraph("Average Weight Trend (all animals)", BOLD_FONT));
+            document.add(Chunk.NEWLINE);
 
-        PdfPTable table = createStyledTable(
-                new String[]{"Date", "Average Weight (g)"},
-                new float[]{3, 2});
+            PdfPTable table = createStyledTable(
+                    new String[]{"Date", "Average Weight (g)"},
+                    new float[]{3, 2});
 
-        List<WeightDataPoint> weightData = data.getAverageWeight();
-        int startIdx = Math.max(0, weightData.size() - 30);
-        for (int i = startIdx; i < weightData.size(); i++) {
-            WeightDataPoint w = weightData.get(i);
-            Color bg = (i - startIdx) % 2 == 0 ? Color.WHITE : STRIPE_COLOR;
-            addStyledRow(table, bg, w.getDate(), String.format("%.1f", w.getWeightGrams()));
+            List<WeightDataPoint> weightData = data.getAverageWeight();
+            int startIdx = Math.max(0, weightData.size() - 30);
+            for (int i = startIdx; i < weightData.size(); i++) {
+                WeightDataPoint w = weightData.get(i);
+                Color bg = (i - startIdx) % 2 == 0 ? Color.WHITE : STRIPE_COLOR;
+                addStyledRow(table, bg, w.getDate(), String.format("%.1f", w.getWeightGrams()));
+            }
+            document.add(table);
         }
-        document.add(table);
+
+        // Medical Records
+        if (data.getMedicalRecords() != null && !data.getMedicalRecords().isEmpty()) {
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(new Paragraph("Medical Records (" + data.getMedicalRecords().size() + " records)", BOLD_FONT));
+            document.add(Chunk.NEWLINE);
+
+            PdfPTable medTable = createStyledTable(
+                    new String[]{"Date", "Animal", "Type", "Title", "Veterinarian", "Notes"},
+                    new float[]{1.5f, 1.5f, 1.2f, 2f, 1.5f, 2.5f});
+
+            for (int i = 0; i < data.getMedicalRecords().size(); i++) {
+                MedicalRecordSummary r = data.getMedicalRecords().get(i);
+                Color bg = i % 2 == 0 ? Color.WHITE : STRIPE_COLOR;
+                addStyledRow(medTable, bg,
+                        r.getDate() != null ? r.getDate() : "",
+                        r.getAnimalName() != null ? r.getAnimalName() : "",
+                        r.getType() != null ? r.getType() : "",
+                        r.getTitle() != null ? r.getTitle() : "",
+                        r.getVeterinarianName() != null ? r.getVeterinarianName() : "",
+                        r.getNotes() != null ? r.getNotes() : "");
+            }
+            document.add(medTable);
+        }
     }
 
     // ════════════════════════════════════════════════════════════

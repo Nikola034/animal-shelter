@@ -89,6 +89,7 @@ public class ReportDataService {
         // Health
         if (includeAll || "health".equals(sectionNormalized)) {
             data.setAverageWeight(healthService.getAverageWeightByCategory(days));
+            data.setMedicalRecords(healthService.getMedicalRecordSummaries(days));
         }
 
         return data;
