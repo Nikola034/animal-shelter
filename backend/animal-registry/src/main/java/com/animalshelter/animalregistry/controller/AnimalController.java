@@ -3,9 +3,13 @@ package com.animalshelter.animalregistry.controller;
 import com.animalshelter.animalregistry.config.UserContext;
 import com.animalshelter.animalregistry.dto.*;
 import com.animalshelter.animalregistry.exception.AccessDeniedException;
+import com.animalshelter.animalregistry.model.Animal;
 import com.animalshelter.animalregistry.model.AnimalCategory;
 import com.animalshelter.animalregistry.model.AnimalStatus;
+import com.animalshelter.animalregistry.repository.AnimalRepository;
 import com.animalshelter.animalregistry.service.AnimalService;
+import com.animalshelter.animalregistry.service.AnimalVectorService;
+import com.animalshelter.animalregistry.service.RagSearchService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +24,22 @@ public class AnimalController {
 
     private final AnimalService animalService;
     private final UserContext userContext;
+    private final RagSearchService ragSearchService;
+    private final AnimalVectorService animalVectorService;
+    private final AnimalRepository animalRepository;
 
-    public AnimalController(AnimalService animalService, UserContext userContext) {
+    public AnimalController(
+            AnimalService animalService,
+            UserContext userContext,
+            RagSearchService ragSearchService,
+            AnimalVectorService animalVectorService,
+            AnimalRepository animalRepository
+    ) {
         this.animalService = animalService;
         this.userContext = userContext;
+        this.ragSearchService = ragSearchService;
+        this.animalVectorService = animalVectorService;
+        this.animalRepository = animalRepository;
     }
 
     @GetMapping
@@ -94,6 +110,21 @@ public class AnimalController {
     ) {
         requireRole("Admin", "Caretaker");
         return ResponseEntity.ok(animalService.deleteImage(id, imagePath));
+    }
+
+    @PostMapping("/rag-search")
+    public ResponseEntity<RagSearchResponse> ragSearch(@Valid @RequestBody RagSearchRequest request) {
+        RagSearchResponse response = ragSearchService.search(request.query(), request.limit());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/rag-sync")
+    public ResponseEntity<MessageResponse> ragSync() {
+        requireRole("Admin");
+        List<Animal> allAnimals = animalRepository.findAll();
+        int synced = animalVectorService.syncAll(allAnimals);
+        return ResponseEntity.ok(new MessageResponse(true,
+                "Synced " + synced + "/" + allAnimals.size() + " animals with embeddings in MongoDB"));
     }
 
     private void requireRole(String... allowedRoles) {
