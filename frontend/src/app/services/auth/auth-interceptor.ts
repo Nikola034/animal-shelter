@@ -27,7 +27,8 @@ export class AuthInterceptor implements HttpInterceptor {
   private readonly excludedUrls = [
     '/auth/login',
     '/auth/register',
-    '/auth/refresh-token'
+    '/auth/refresh-token',
+    '/auth/logout'
   ];
 
   constructor(private authService: AuthService) {}
@@ -107,10 +108,8 @@ export class AuthInterceptor implements HttpInterceptor {
             return next.handle(newRequest);
           }),
           catchError((error) => {
-            console.error('Token refresh failed:', error);
             this.isRefreshing = false;
             this.refreshTokenSubject.next(null);
-            this.authService.logout();
             return throwError(() => error);
           }),
           finalize(() => {

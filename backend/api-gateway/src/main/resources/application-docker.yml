@@ -1,0 +1,23 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: http://user-service:8001
+          predicates:
+            - Path=/api/users/**, /api/auth/**
+
+        - id: animal-registry
+          uri: http://animal-registry:8002
+          predicates:
+            - Path=/api/animals/**, /api/medical/**
+
+        - id: activity-tracking
+          uri: http://activity-tracking:8003
+          predicates:
+            - Path=/api/activities/**, /api/feeding/**, /api/measurements/**
+
+        - id: analytics-service
+          uri: http://analytics-service:8004
+          predicates:
+            - Path=/api/analytics/**, /api/reports/**
