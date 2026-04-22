@@ -1,6 +1,6 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://mongodb:27017/animal_registry
+      uri: mongodb://mongodb:27017/animal_registry?directConnection=true
   rabbitmq:
     host: rabbitmq

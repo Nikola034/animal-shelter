@@ -19,7 +19,7 @@ services:
       retries: 10
 
   mongodb:
-    image: mongo:7
+    image: mongodb/mongodb-atlas-local:8.0
     container_name: shelter-mongodb
     ports:
       - "27017:27017"
@@ -29,8 +29,8 @@ services:
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 15
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
