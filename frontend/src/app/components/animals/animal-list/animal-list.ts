@@ -12,6 +12,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { TextareaModule } from 'primeng/textarea';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
 
 import { AnimalService } from '../../../services/animal/animal-service';
@@ -41,7 +44,10 @@ import {
     InputTextModule,
     ToastModule,
     CardModule,
-    TooltipModule
+    TooltipModule,
+    DialogModule,
+    TextareaModule,
+    ProgressSpinnerModule
   ],
   providers: [MessageService],
   templateUrl: 'animal-list.html'
