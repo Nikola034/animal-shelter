@@ -3,6 +3,8 @@ package com.animalshelter.animalregistry.service;
 import com.animalshelter.animalregistry.config.UserContext;
 import com.animalshelter.animalregistry.dto.*;
 import com.animalshelter.animalregistry.exception.ResourceNotFoundException;
+import com.animalshelter.animalregistry.messaging.AnimalEventPublisher;
+import com.animalshelter.animalregistry.messaging.event.MedicalTreatmentAddedEvent;
 import com.animalshelter.animalregistry.model.MedicalRecord;
 import com.animalshelter.animalregistry.model.MedicalRecordType;
 import com.animalshelter.animalregistry.repository.AnimalRepository;
@@ -18,15 +20,18 @@ public class MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepository;
     private final AnimalRepository animalRepository;
     private final UserContext userContext;
+    private final AnimalEventPublisher eventPublisher;
 
     public MedicalRecordService(
             MedicalRecordRepository medicalRecordRepository,
             AnimalRepository animalRepository,
-            UserContext userContext
+            UserContext userContext,
+            AnimalEventPublisher eventPublisher
     ) {
         this.medicalRecordRepository = medicalRecordRepository;
         this.animalRepository = animalRepository;
         this.userContext = userContext;
+        this.eventPublisher = eventPublisher;
     }
 
     public MedicalRecordResponse createRecord(CreateMedicalRecordRequest request) {
@@ -47,6 +52,19 @@ public class MedicalRecordService {
                 .build();
 
         record = medicalRecordRepository.save(record);
+
+        eventPublisher.publishMedicalTreatmentAdded(MedicalTreatmentAddedEvent.builder()
+                .recordId(record.getId())
+                .animalId(record.getAnimalId())
+                .type(record.getType().name())
+                .title(record.getTitle())
+                .description(record.getDescription())
+                .date(record.getDate())
+                .veterinarianId(record.getVeterinarianId())
+                .veterinarianName(record.getVeterinarianName())
+                .timestamp(LocalDateTime.now())
+                .build());
+
         return MedicalRecordResponse.fromEntity(record);
     }
 

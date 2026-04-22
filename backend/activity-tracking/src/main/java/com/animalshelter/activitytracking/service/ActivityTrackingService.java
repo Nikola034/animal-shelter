@@ -4,6 +4,9 @@ import com.animalshelter.activitytracking.config.UserContext;
 import com.animalshelter.activitytracking.dto.*;
 import com.animalshelter.activitytracking.exception.AccessDeniedException;
 import com.animalshelter.activitytracking.exception.ResourceNotFoundException;
+import com.animalshelter.activitytracking.messaging.ActivityEventPublisher;
+import com.animalshelter.activitytracking.messaging.event.DailyMetricsRecordedEvent;
+import com.animalshelter.activitytracking.messaging.event.FeedingRecordedEvent;
 import com.animalshelter.activitytracking.model.*;
 import com.animalshelter.activitytracking.repository.*;
 import org.springframework.beans.factory.ObjectProvider;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,15 +28,18 @@ public class ActivityTrackingService {
     private final ActivityRecordRepository activityRepository;
     private final FeedingRecordRepository feedingRepository;
     private final ObjectProvider<UserContext> userContextProvider;
+    private final ActivityEventPublisher eventPublisher;
 
     public ActivityTrackingService(DailyMeasurementRepository measurementRepository,
                                    ActivityRecordRepository activityRepository,
                                    FeedingRecordRepository feedingRepository,
-                                   ObjectProvider<UserContext> userContextProvider) {
+                                   ObjectProvider<UserContext> userContextProvider,
+                                   ActivityEventPublisher eventPublisher) {
         this.measurementRepository = measurementRepository;
         this.activityRepository = activityRepository;
         this.feedingRepository = feedingRepository;
         this.userContextProvider = userContextProvider;
+        this.eventPublisher = eventPublisher;
     }
 
     // ══════════════════════════════════════════════════════════
@@ -59,7 +66,22 @@ public class ActivityTrackingService {
         if (request.getEnergyLevel() != null) measurement.setEnergyLevel(request.getEnergyLevel());
         if (request.getMoodLevel() != null) measurement.setMoodLevel(request.getMoodLevel());
 
-        return DailyMeasurementResponse.fromEntity(measurementRepository.save(measurement));
+        DailyMeasurement saved = measurementRepository.save(measurement);
+
+        eventPublisher.publishDailyMetricsRecorded(DailyMetricsRecordedEvent.builder()
+                .measurementId(saved.getId())
+                .animalId(saved.getAnimalId())
+                .date(saved.getDate())
+                .weightGrams(saved.getWeightGrams())
+                .temperatureCelsius(saved.getTemperatureCelsius())
+                .energyLevel(saved.getEnergyLevel())
+                .moodLevel(saved.getMoodLevel())
+                .recordedBy(ctx.getUserId())
+                .recordedByName(ctx.getUsername())
+                .timestamp(LocalDateTime.now())
+                .build());
+
+        return DailyMeasurementResponse.fromEntity(saved);
     }
 
     public DailyMeasurementResponse getMeasurement(String animalId, LocalDate date) {
@@ -131,7 +153,20 @@ public class ActivityTrackingService {
         record.setRecordedBy(ctx.getUserId());
         record.setRecordedByName(ctx.getUsername());
 
-        return FeedingRecordResponse.fromEntity(feedingRepository.save(record));
+        FeedingRecord saved = feedingRepository.save(record);
+
+        eventPublisher.publishFeedingRecorded(FeedingRecordedEvent.builder()
+                .feedingId(saved.getId())
+                .animalId(saved.getAnimalId())
+                .foodType(saved.getFoodType().name())
+                .quantityGrams(saved.getQuantityGrams())
+                .mealTime(saved.getMealTime())
+                .recordedBy(ctx.getUserId())
+                .recordedByName(ctx.getUsername())
+                .timestamp(LocalDateTime.now())
+                .build());
+
+        return FeedingRecordResponse.fromEntity(saved);
     }
 
     public List<FeedingRecordResponse> getFeedingsByAnimalAndDate(String animalId, LocalDate date) {
