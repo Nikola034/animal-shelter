@@ -56,4 +56,6 @@ public class Animal {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private List<Double> embedding;
 }

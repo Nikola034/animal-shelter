@@ -26,3 +26,17 @@ app:
     dir: ./uploads/animals
     allowed-types: image/jpeg,image/png,image/webp,image/gif
     max-images-per-animal: 10
+
+embedding:
+  api:
+    url: http://localhost:9090
+
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:}
+  model: claude-sonnet-4-6
+  max-tokens: 2048
+
+rag:
+  search:
+    default-limit: 5
+    enabled: true

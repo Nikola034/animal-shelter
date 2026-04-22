@@ -31,6 +31,7 @@ public class AnimalService {
     private final ImageStorageService imageStorageService;
     private final UserContext userContext;
     private final AnimalEventPublisher eventPublisher;
+    private final AnimalVectorService animalVectorService;
     private final int maxImagesPerAnimal;
 
     public AnimalService(
@@ -40,6 +41,7 @@ public class AnimalService {
             ImageStorageService imageStorageService,
             UserContext userContext,
             AnimalEventPublisher eventPublisher,
+            AnimalVectorService animalVectorService,
             @Value("${app.upload.max-images-per-animal}") int maxImagesPerAnimal
     ) {
         this.animalRepository = animalRepository;
@@ -48,6 +50,7 @@ public class AnimalService {
         this.imageStorageService = imageStorageService;
         this.userContext = userContext;
         this.eventPublisher = eventPublisher;
+        this.animalVectorService = animalVectorService;
         this.maxImagesPerAnimal = maxImagesPerAnimal;
     }
 
@@ -87,6 +90,9 @@ public class AnimalService {
         animal.getStatusHistory().add(initialStatus);
 
         animal = animalRepository.save(animal);
+
+        // Sync to Weaviate vector store for RAG search
+        animalVectorService.upsertAnimal(animal);
 
         eventPublisher.publishAnimalRegistered(AnimalRegisteredEvent.builder()
                 .animalId(animal.getId())
@@ -166,6 +172,10 @@ public class AnimalService {
 
         animal.setUpdatedAt(LocalDateTime.now());
         animal = animalRepository.save(animal);
+
+        // Sync updated data to Weaviate
+        animalVectorService.upsertAnimal(animal);
+
         return AnimalResponse.fromEntity(animal);
     }
 
@@ -189,6 +199,9 @@ public class AnimalService {
 
         animal = animalRepository.save(animal);
 
+        // Sync status change to Weaviate
+        animalVectorService.upsertAnimal(animal);
+
         eventPublisher.publishAnimalStatusChanged(AnimalStatusChangedEvent.builder()
                 .animalId(animal.getId())
                 .animalName(animal.getName())
@@ -210,6 +223,9 @@ public class AnimalService {
         imageStorageService.deleteAllForAnimal(id);
         medicalRecordRepository.deleteByAnimalId(id);
         animalRepository.delete(animal);
+
+        // Remove from Weaviate vector store
+        animalVectorService.deleteAnimal(id);
 
         return new MessageResponse(true, "Animal deleted successfully");
     }

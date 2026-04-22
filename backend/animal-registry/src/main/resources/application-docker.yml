@@ -1,6 +1,10 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://mongodb:27017/animal_registry
+      uri: mongodb://mongodb:27017/animal_registry?directConnection=true
   rabbitmq:
     host: rabbitmq
+
+embedding:
+  api:
+    url: http://text2vec-transformers:8080
