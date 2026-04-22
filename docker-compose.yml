@@ -47,6 +47,15 @@ services:
       timeout: 5s
       retries: 10
 
+  text2vec-transformers:
+    image: semitechnologies/transformers-inference:sentence-transformers-all-MiniLM-L6-v2
+    container_name: shelter-text2vec
+    environment:
+      ENABLE_CUDA: '0'
+    ports:
+      - "9090:8080"
+    restart: on-failure
+
   user-service:
     build:
       context: ./backend
@@ -68,6 +77,7 @@ services:
     container_name: shelter-animal-registry
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     ports:
       - "8002:8002"
     volumes:
@@ -77,6 +87,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      text2vec-transformers:
+        condition: service_started
     restart: on-failure
 
   activity-tracking:
