@@ -115,3 +115,29 @@
 
   </ng-template>
 </p-card>
+
+<!-- AI Search Dialog -->
+<p-dialog header="AI Semantic Search" [(visible)]="showAiSearch" [modal]="true"
+          [style]="{'width': '40rem', 'max-width': '95vw'}" [closable]="true">
+
+  <div class="flex flex-column gap-3">
+
+    <!-- Search Input -->
+    <div class="flex flex-column gap-2">
+      <label class="font-semibold text-color-secondary text-sm">
+        <i class="pi pi-sparkles mr-1"></i>Describe what you're looking for
+      </label>
+      <textarea pInputTextarea [(ngModel)]="aiQuery" rows="3"
+                placeholder="e.g. friendly dog good with children, calm cat for apartment, injured animal needing care..."
+                class="w-full"
+                [disabled]="aiSearching"></textarea>
+    </div>
+
+    <!-- Search Button -->
+    <div class="flex justify-content-end">
+      <p-button icon="pi pi-search" label="Search" (onClick)="executeAiSearch()"
+                [loading]="aiSearching" [disabled]="!aiQuery.trim() || aiSearching"></p-button>
+    </div>
+
+  </div>
+</p-dialog>
