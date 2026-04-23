@@ -33,6 +33,9 @@
       <p-button icon="pi pi-filter-slash" label="Clear" [text]="true" (onClick)="clearFilters()"></p-button>
 
       <div class="flex-grow-1"></div>
+      <p-button icon="pi pi-sparkles" label="AI Search" [outlined]="true"
+                severity="help" (onClick)="openAiSearch()"
+                ></p-button>
       <p-button icon="pi pi-refresh" [text]="true" [rounded]="true" (onClick)="loadAnimals()"
                 ></p-button>
     </div>
