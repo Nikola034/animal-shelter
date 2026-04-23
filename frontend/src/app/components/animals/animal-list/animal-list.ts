@@ -179,4 +179,31 @@ export class AnimalList implements OnInit, OnDestroy {
     this.aiResults = [];
     this.aiAnswer = '';
   }
+
+  executeAiSearch(): void {
+    if (!this.aiQuery.trim()) return;
+
+    this.aiSearching = true;
+    this.aiResults = [];
+    this.aiAnswer = '';
+
+    this.animalService.ragSearch(this.aiQuery.trim(), 5)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.aiResults = response.matched_animals;
+          this.aiAnswer = response.answer;
+          this.aiSearching = false;
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'AI Search Error',
+            detail: 'Failed to perform AI search. Please try again.',
+            life: 5000
+          });
+          this.aiSearching = false;
+        }
+      });
+  }
 }
