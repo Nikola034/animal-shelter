@@ -206,4 +206,19 @@ export class AnimalList implements OnInit, OnDestroy {
         }
       });
   }
+
+  viewAnimalFromAi(id: string): void {
+    this.showAiSearch = false;
+    this.router.navigate(['/app/animals', id]);
+  }
+
+  getScorePercent(score: number): number {
+    return Math.round(score * 100);
+  }
+
+  getScoreSeverity(score: number): string {
+    if (score >= 0.8) return 'success';
+    if (score >= 0.6) return 'warn';
+    return 'info';
+  }
 }
