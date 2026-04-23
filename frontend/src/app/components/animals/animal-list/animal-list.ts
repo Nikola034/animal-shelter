@@ -20,6 +20,7 @@ import { MessageService } from 'primeng/api';
 import { AnimalService } from '../../../services/animal/animal-service';
 import { AuthService } from '../../../services/auth/auth-service';
 import { AnimalResponse } from '../../../dto/animal/AnimalResponse';
+import { RagSearchMatch } from '../../../dto/animal/RagSearchResponse';
 import {
   AnimalCategory,
   ANIMAL_CATEGORY_OPTIONS,
@@ -71,6 +72,13 @@ export class AnimalList implements OnInit, OnDestroy {
     { label: 'All Statuses', value: null },
     ...ANIMAL_STATUS_OPTIONS
   ];
+
+  // AI Search
+  showAiSearch = false;
+  aiQuery = '';
+  aiResults: RagSearchMatch[] = [];
+  aiAnswer = '';
+  aiSearching = false;
 
   private destroy$ = new Subject<void>();
 
@@ -161,5 +169,14 @@ export class AnimalList implements OnInit, OnDestroy {
       case 'Female': return 'pi pi-venus';
       default: return 'pi pi-question-circle';
     }
+  }
+
+  // ── AI Search ──────────────────────────────────────────────
+
+  openAiSearch(): void {
+    this.showAiSearch = true;
+    this.aiQuery = '';
+    this.aiResults = [];
+    this.aiAnswer = '';
   }
 }
