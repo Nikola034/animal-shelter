@@ -139,5 +139,49 @@
                 [loading]="aiSearching" [disabled]="!aiQuery.trim() || aiSearching"></p-button>
     </div>
 
+    <!-- Loading -->
+    <div *ngIf="aiSearching" class="flex flex-column align-items-center py-4">
+      <p-progressSpinner [style]="{'width': '40px', 'height': '40px'}" strokeWidth="4"></p-progressSpinner>
+      <span class="text-color-secondary mt-2 text-sm">Searching with AI...</span>
+    </div>
+
+    <!-- Results -->
+    <div *ngIf="aiResults.length > 0 && !aiSearching" class="flex flex-column gap-2">
+      <span class="font-semibold text-sm text-color-secondary">
+        Found {{ aiResults.length }} match(es)
+      </span>
+
+      <div *ngFor="let match of aiResults"
+           class="border-1 surface-border border-round p-3 cursor-pointer hover:surface-hover transition-colors transition-duration-200"
+           (click)="viewAnimalFromAi(match.id)">
+        <div class="flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="font-bold text-lg">{{ match.name }}</span>
+            <span class="text-color-secondary ml-2">{{ match.category }} · {{ match.breed }}</span>
+          </div>
+          <p-tag [value]="getScorePercent(match.relevance_score) + '% match'"
+                 [severity]="getScoreSeverity(match.relevance_score)"></p-tag>
+        </div>
+        <div class="text-sm text-color-secondary mb-2">{{ match.description }}</div>
+        <div class="flex align-items-center gap-2">
+          <p-tag [value]="match.status" [severity]="getStatusSeverity($any(match.status))"></p-tag>
+          <div class="flex-grow-1">
+            <div class="border-round overflow-hidden surface-200" style="height: 6px;">
+              <div class="h-full border-round"
+                   [style.width.%]="getScorePercent(match.relevance_score)"
+                   [style.background-color]="match.relevance_score >= 0.8 ? 'var(--green-500)' : match.relevance_score >= 0.6 ? 'var(--yellow-500)' : 'var(--blue-500)'">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="aiResults.length === 0 && aiAnswer && !aiSearching" class="text-center py-4">
+      <i class="pi pi-inbox text-4xl text-color-secondary mb-2 block"></i>
+      <span class="text-color-secondary">No matching animals found. Try a different query.</span>
+    </div>
+
   </div>
 </p-dialog>
