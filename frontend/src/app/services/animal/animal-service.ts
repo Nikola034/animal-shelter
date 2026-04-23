@@ -13,7 +13,8 @@ import {
   MedicalRecordResponse,
   MedicalRecordListResponse,
   CreateMedicalRecordRequest,
-  MedicalRecordType
+  MedicalRecordType,
+  RagSearchResponse
 } from '../../dto/animal';
 
 @Injectable({
@@ -98,5 +99,11 @@ export class AnimalService {
 
   deleteMedicalRecord(id: string): Observable<MessageResponse> {
     return this.http.delete<MessageResponse>(`${this.medicalUrl}/${id}`);
+  }
+
+  // ── RAG Semantic Search ────────────────────────────────────
+
+  ragSearch(query: string, limit: number = 5): Observable<RagSearchResponse> {
+    return this.http.post<RagSearchResponse>(`${this.animalsUrl}/rag-search`, { query, limit });
   }
 }

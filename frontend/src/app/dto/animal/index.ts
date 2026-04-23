@@ -6,3 +6,4 @@ export * from './AnimalResponse';
 export * from './MedicalRecordResponse';
 export * from './CreateAnimalRequest';
 export * from './CreateMedicalRecordRequest';
+export * from './RagSearchResponse';

@@ -12,11 +12,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { TextareaModule } from 'primeng/textarea';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageService } from 'primeng/api';
 
 import { AnimalService } from '../../../services/animal/animal-service';
 import { AuthService } from '../../../services/auth/auth-service';
 import { AnimalResponse } from '../../../dto/animal/AnimalResponse';
+import { RagSearchMatch } from '../../../dto/animal/RagSearchResponse';
 import {
   AnimalCategory,
   ANIMAL_CATEGORY_OPTIONS,
@@ -41,7 +45,10 @@ import {
     InputTextModule,
     ToastModule,
     CardModule,
-    TooltipModule
+    TooltipModule,
+    DialogModule,
+    TextareaModule,
+    ProgressSpinnerModule
   ],
   providers: [MessageService],
   templateUrl: 'animal-list.html'
@@ -65,6 +72,13 @@ export class AnimalList implements OnInit, OnDestroy {
     { label: 'All Statuses', value: null },
     ...ANIMAL_STATUS_OPTIONS
   ];
+
+  // AI Search
+  showAiSearch = false;
+  aiQuery = '';
+  aiResults: RagSearchMatch[] = [];
+  aiAnswer = '';
+  aiSearching = false;
 
   private destroy$ = new Subject<void>();
 
@@ -155,5 +169,56 @@ export class AnimalList implements OnInit, OnDestroy {
       case 'Female': return 'pi pi-venus';
       default: return 'pi pi-question-circle';
     }
+  }
+
+  // ── AI Search ──────────────────────────────────────────────
+
+  openAiSearch(): void {
+    this.showAiSearch = true;
+    this.aiQuery = '';
+    this.aiResults = [];
+    this.aiAnswer = '';
+  }
+
+  executeAiSearch(): void {
+    if (!this.aiQuery.trim()) return;
+
+    this.aiSearching = true;
+    this.aiResults = [];
+    this.aiAnswer = '';
+
+    this.animalService.ragSearch(this.aiQuery.trim(), 5)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.aiResults = response.matched_animals;
+          this.aiAnswer = response.answer;
+          this.aiSearching = false;
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'AI Search Error',
+            detail: 'Failed to perform AI search. Please try again.',
+            life: 5000
+          });
+          this.aiSearching = false;
+        }
+      });
+  }
+
+  viewAnimalFromAi(id: string): void {
+    this.showAiSearch = false;
+    this.router.navigate(['/app/animals', id]);
+  }
+
+  getScorePercent(score: number): number {
+    return Math.round(score * 100);
+  }
+
+  getScoreSeverity(score: number): string {
+    if (score >= 0.8) return 'success';
+    if (score >= 0.6) return 'warn';
+    return 'info';
   }
 }
