@@ -49,7 +49,10 @@ export class UserService {
   }
 
   changeMyPassword(currentPassword: string, newPassword: string): Observable<MessageResponse> {
-    return this.http.put<MessageResponse>(`${this.baseUrl}/me/password`, { currentPassword, newPassword });
+    return this.http.put<MessageResponse>(`${this.baseUrl}/me/password`, {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
   }
 
   updateUserProfile(id: string, data: { name?: string; email?: string }): Observable<UserResponse> {
