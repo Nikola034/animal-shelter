@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { UserResponse, UsersListResponse, MessageResponse } from '../../dto/auth/UserResponse';
 import { UserRole } from '../../dto/auth/UserRole';
 import { UserStatus } from '../../dto/auth/UserStatus';
+import { ChangePasswordRequest } from '../../dto/auth/ChangePasswordRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -48,11 +49,8 @@ export class UserService {
     return this.http.put<UserResponse>(`${this.baseUrl}/me/profile`, data);
   }
 
-  changeMyPassword(currentPassword: string, newPassword: string): Observable<MessageResponse> {
-    return this.http.put<MessageResponse>(`${this.baseUrl}/me/password`, {
-      current_password: currentPassword,
-      new_password: newPassword,
-    });
+  changeMyPassword(request: ChangePasswordRequest): Observable<MessageResponse> {
+    return this.http.put<MessageResponse>(`${this.baseUrl}/me/password`, request);
   }
 
   updateUserProfile(id: string, data: { name?: string; email?: string }): Observable<UserResponse> {
