@@ -113,20 +113,25 @@ export class Profile implements OnInit {
     }
 
     this.savingPassword = true;
-    this.userService.changeMyPassword(this.currentPassword, this.newPassword).subscribe({
-      next: () => {
-        this.savingPassword = false;
-        this.currentPassword = '';
-        this.newPassword = '';
-        this.confirmPassword = '';
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Password changed successfully' });
-      },
-      error: (err) => {
-        this.savingPassword = false;
-        const msg = err.error?.message || 'Failed to change password';
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: msg });
-      },
-    });
+    this.userService
+      .changeMyPassword({
+        current_password: this.currentPassword,
+        new_password: this.newPassword,
+      })
+      .subscribe({
+        next: () => {
+          this.savingPassword = false;
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Password changed successfully' });
+        },
+        error: (err) => {
+          this.savingPassword = false;
+          const msg = err.error?.message || 'Failed to change password';
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: msg });
+        },
+      });
   }
 
   getRoleSeverity(role: string): string {
