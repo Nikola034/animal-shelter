@@ -63,7 +63,7 @@ export class Sidebar {
   }
 
   // Caretaker: operational role — dashboard, animal CRUD, daily tracking,
-  // feeding, semantic search and analytics. Thesis ch. IV.Г.
+  // semantic search and analytics. Thesis ch. IV.Г.
   private buildCaretakerMenu(): MenuItem[] {
     return [
       {
@@ -77,7 +77,6 @@ export class Sidebar {
         label: 'Daily Operations',
         items: [
           { label: 'Daily Tracking', icon: 'pi pi-chart-line', routerLink: '/app/activities' },
-          { label: 'Feeding', icon: 'pi pi-bolt', routerLink: '/app/feeding' },
         ]
       },
       {
@@ -111,8 +110,10 @@ export class Sidebar {
     ];
   }
 
-  // Admin: everything caretakers see, plus medical records, user management
-  // and pending registrations. Thesis ch. IV.Ђ.
+  // Admin: everything caretakers see, plus medical records and user
+  // management. Thesis ch. IV.Ђ. Pending registrations are filtered
+  // inside the same Users table via its status dropdown — no need for
+  // a separate menu entry pointing at the same screen.
   private buildAdminMenu(): MenuItem[] {
     return [
       {
@@ -126,7 +127,6 @@ export class Sidebar {
         label: 'Daily Operations',
         items: [
           { label: 'Daily Tracking', icon: 'pi pi-chart-line', routerLink: '/app/activities' },
-          { label: 'Feeding', icon: 'pi pi-bolt', routerLink: '/app/feeding' },
         ]
       },
       {
@@ -146,7 +146,6 @@ export class Sidebar {
         label: 'Administration',
         items: [
           { label: 'Users', icon: 'pi pi-users', routerLink: '/app/users' },
-          { label: 'Pending Registrations', icon: 'pi pi-user-plus', routerLink: '/app/admin/pending-users' },
         ]
       }
     ];
