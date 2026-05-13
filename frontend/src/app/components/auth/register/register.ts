@@ -143,7 +143,7 @@ export class Register implements OnInit, OnDestroy {
             life: 5000,
           });
           this.isLoading = false;
-          setTimeout(() => this.router.navigate(['/']), 2000);
+          setTimeout(() => this.router.navigate(['/login']), 2000);
         },
         error: (error) => {
           this.isLoading = false;
@@ -203,7 +203,7 @@ export class Register implements OnInit, OnDestroy {
   }
 
   navigateToLogin(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 
   // Getters for template

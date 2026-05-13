@@ -7,9 +7,13 @@ import { VeterinarianGuard } from './services/auth/veterinarian-guard';
 import { DashboardRedirectGuard } from './services/auth/dashboard-redirect-guard';
 
 export const routes: Routes = [
-  // Public routes
+  // Public landing page for unauthenticated visitors (thesis ch. IV.Б.1)
   {
     path: '',
+    loadComponent: () => import('./components/home/home').then(m => m.Home)
+  },
+  {
+    path: 'login',
     loadComponent: () => import('./components/auth/login/login').then(m => m.Login)
   },
   {

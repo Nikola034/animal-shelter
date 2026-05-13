@@ -1,0 +1,63 @@
+<div class="min-h-screen flex flex-column align-items-center justify-content-center px-3 py-5">
+
+  <div class="w-full" style="max-width: 56rem;">
+
+    <!-- Hero -->
+    <div class="text-center mb-5">
+      <i class="pi pi-heart-fill text-primary text-6xl mb-3 block"></i>
+      <h1 class="text-4xl md:text-5xl font-bold m-0 mb-3">
+        Animal Shelter Management System
+      </h1>
+      <p class="text-lg md:text-xl text-color-secondary m-0 mb-4 line-height-3"
+         style="max-width: 42rem; margin: 0 auto;">
+        A unified platform for managing animals, daily care and medical records —
+        with AI-assisted semantic search to help match animals with the people
+        who can give them a home.
+      </p>
+
+      <div class="flex flex-wrap gap-3 justify-content-center">
+        <p-button label="Sign In" icon="pi pi-sign-in"
+                  styleClass="text-lg"
+                  (onClick)="goToLogin()"></p-button>
+        <p-button label="Create Account" icon="pi pi-user-plus"
+                  [outlined]="true" styleClass="text-lg"
+                  (onClick)="goToRegister()"></p-button>
+      </div>
+    </div>
+
+    <p-divider align="center">
+      <span class="text-color-secondary font-semibold text-sm">
+        WHO IS THE SYSTEM FOR
+      </span>
+    </p-divider>
+
+    <!-- Role cards -->
+    <div class="grid mt-2">
+      <div class="col-12 md:col-4" *ngFor="let role of roles">
+        <p-card styleClass="shadow-2 h-full">
+          <ng-template pTemplate="content">
+            <div class="text-center">
+              <div class="flex align-items-center justify-content-center border-round-xl mx-auto mb-3"
+                   [ngClass]="[role.iconBg, role.iconColor]"
+                   style="width: 4rem; height: 4rem;">
+                <i class="text-3xl" [ngClass]="role.icon"></i>
+              </div>
+              <h3 class="text-xl font-bold m-0 mb-2">{{ role.label }}</h3>
+              <p class="text-color-secondary line-height-3 m-0 text-sm">
+                {{ role.description }}
+              </p>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Footer note -->
+    <div class="text-center mt-5">
+      <span class="text-color-secondary text-sm">
+        New registrations require approval by a shelter administrator before sign-in.
+      </span>
+    </div>
+
+  </div>
+</div>
