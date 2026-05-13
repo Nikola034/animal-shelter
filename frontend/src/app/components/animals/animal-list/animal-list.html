@@ -145,6 +145,18 @@
       <span class="text-color-secondary mt-2 text-sm">Searching with AI...</span>
     </div>
 
+    <!-- Claude's narrative analysis: why these animals match the query -->
+    <div *ngIf="aiAnswer && !aiSearching"
+         class="border-1 surface-border border-round p-3 bg-primary-50">
+      <div class="flex align-items-start gap-2">
+        <i class="pi pi-sparkles text-primary text-lg mt-1"></i>
+        <div class="flex-grow-1">
+          <span class="font-semibold text-sm block mb-1">AI Analysis</span>
+          <div class="text-sm line-height-3 white-space-pre-line">{{ aiAnswer }}</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Results -->
     <div *ngIf="aiResults.length > 0 && !aiSearching" class="flex flex-column gap-2">
       <span class="font-semibold text-sm text-color-secondary">
