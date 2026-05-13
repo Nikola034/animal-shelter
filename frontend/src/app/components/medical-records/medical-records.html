@@ -1,0 +1,101 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="mb-4">
+  <h1 class="text-3xl font-bold m-0 mb-2">
+    <i class="pi pi-briefcase text-primary mr-2"></i>Medical Records
+  </h1>
+  <p class="text-color-secondary m-0">
+    All medical records across every animal in the shelter. Use the filters to narrow by animal, record type or date range.
+  </p>
+</div>
+
+<p-card styleClass="shadow-2">
+  <ng-template pTemplate="content">
+
+    <!-- Filter Bar -->
+    <div class="flex flex-wrap gap-3 align-items-end mb-3">
+      <div style="min-width: 220px;">
+        <label class="block font-medium text-sm mb-2">Animal</label>
+        <p-dropdown [options]="animalOptions" [(ngModel)]="animalFilter"
+                    (onChange)="applyFilters()" placeholder="All animals"
+                    [filter]="true" filterPlaceholder="Search..."
+                    [appendTo]="'body'" styleClass="w-full"></p-dropdown>
+      </div>
+      <div style="min-width: 200px;">
+        <label class="block font-medium text-sm mb-2">Record Type</label>
+        <p-dropdown [options]="typeOptions" [(ngModel)]="typeFilter"
+                    (onChange)="applyFilters()" placeholder="All types"
+                    [appendTo]="'body'" styleClass="w-full"></p-dropdown>
+      </div>
+      <div style="min-width: 260px;">
+        <label class="block font-medium text-sm mb-2">Date Range</label>
+        <p-datepicker [(ngModel)]="dateRange" selectionMode="range"
+                      dateFormat="dd/mm/yy" [showButtonBar]="true"
+                      [appendTo]="'body'" styleClass="w-full"
+                      (onSelect)="applyFilters()" (onClear)="applyFilters()"
+                      [showIcon]="true" placeholder="Pick a range"></p-datepicker>
+      </div>
+      <p-button icon="pi pi-filter-slash" label="Clear" [text]="true"
+                (onClick)="clearFilters()"></p-button>
+      <div class="flex-grow-1"></div>
+      <p-button icon="pi pi-refresh" [text]="true" [rounded]="true"
+                (onClick)="loadAll()" pTooltip="Reload"></p-button>
+    </div>
+
+    <!-- Table -->
+    <p-table [value]="filteredRows" [loading]="loading" [paginator]="true" [rows]="15"
+             [rowsPerPageOptions]="[10, 15, 25, 50]"
+             styleClass="p-datatable-sm p-datatable-striped"
+             [responsiveLayout]="'scroll'">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="date">Date <p-sortIcon field="date"></p-sortIcon></th>
+          <th pSortableColumn="animal_name">Animal <p-sortIcon field="animal_name"></p-sortIcon></th>
+          <th pSortableColumn="type">Type <p-sortIcon field="type"></p-sortIcon></th>
+          <th>Title</th>
+          <th>Veterinarian</th>
+          <th>Description</th>
+          <th style="width: 6rem">Actions</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.date | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <span class="font-semibold">{{ row.animal_name }}</span>
+            <span class="text-color-secondary text-sm ml-2">{{ row.animal_category }}</span>
+          </td>
+          <td>
+            <p-tag [value]="row.type" [severity]="getTypeSeverity(row.type)"></p-tag>
+          </td>
+          <td>{{ row.title }}</td>
+          <td>{{ row.veterinarian_name || '—' }}</td>
+          <td class="text-sm text-color-secondary" style="max-width: 24rem;">
+            <span *ngIf="row.description">{{ row.description }}</span>
+            <span *ngIf="!row.description" class="text-color-secondary">—</span>
+          </td>
+          <td>
+            <p-button icon="pi pi-eye" [text]="true" [rounded]="true"
+                      (onClick)="viewAnimal(row.animal_id)"
+                      pTooltip="Open animal"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7" class="text-center py-5">
+            <i class="pi pi-inbox text-5xl text-color-secondary mb-3 block"></i>
+            <span class="text-color-secondary text-lg block mb-2">No medical records</span>
+            <span class="text-color-secondary text-sm">
+              Try adjusting the filters or check back once vets have logged entries.
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  </ng-template>
+</p-card>

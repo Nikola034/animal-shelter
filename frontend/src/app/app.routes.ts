@@ -3,6 +3,8 @@ import { AuthGuard } from './services/auth/auth-guard';
 import { AdminGuard } from './services/auth/admin-guard';
 import { CaretakerGuard } from './services/auth/caretaker-guard';
 import { AnalyticsGuard } from './services/auth/analytics-guard';
+import { VeterinarianGuard } from './services/auth/veterinarian-guard';
+import { DashboardRedirectGuard } from './services/auth/dashboard-redirect-guard';
 
 export const routes: Routes = [
   // Public routes
@@ -21,14 +23,23 @@ export const routes: Routes = [
     loadComponent: () => import('./components/layout/layout').then(m => m.Layout),
     canActivate: [AuthGuard],
     children: [
+      // Default landing — non-volunteers see the dashboard,
+      // volunteers are bounced to /app/animals (they have no dashboard).
       {
         path: '',
+        canActivate: [DashboardRedirectGuard],
         loadComponent: () => import('./components/dashboard/dashboard').then(m => m.Dashboard)
       },
       {
         path: 'users',
         loadComponent: () => import('./components/admin/user-management/user-management').then(m => m.UserManagement),
         canActivate: [AdminGuard]
+      },
+      // Admin shortcut: opens user management already filtered to Pending.
+      {
+        path: 'admin/pending-users',
+        redirectTo: 'users?status=Pending',
+        pathMatch: 'full'
       },
       {
         path: 'animals',
@@ -48,10 +59,29 @@ export const routes: Routes = [
         loadComponent: () => import('./components/animals/animal-form/animal-form').then(m => m.AnimalForm),
         canActivate: [CaretakerGuard]
       },
+      // Dedicated semantic search page (documented separately from the inline
+      // dialog on /animals). Accessible to anyone authenticated; volunteers
+      // are the primary audience but caretakers and admins also need it.
+      {
+        path: 'search',
+        loadComponent: () => import('./components/search/semantic-search').then(m => m.SemanticSearch)
+      },
       {
         path: 'activities',
         loadComponent: () => import('./components/activities/daily-tracking/daily-tracking').then(m => m.DailyTracking),
         canActivate: [CaretakerGuard]
+      },
+      // Feeding is documented as a separate sidebar entry but reuses the
+      // daily-tracking page (which already has a Feedings card).
+      {
+        path: 'feeding',
+        redirectTo: 'activities',
+        pathMatch: 'full'
+      },
+      {
+        path: 'medical-records',
+        loadComponent: () => import('./components/medical-records/medical-records').then(m => m.MedicalRecords),
+        canActivate: [VeterinarianGuard]
       },
       {
         path: 'analytics',

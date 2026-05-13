@@ -1,0 +1,122 @@
+<p-toast position="top-center"></p-toast>
+
+<div class="mb-4">
+  <h1 class="text-3xl font-bold m-0 mb-2">
+    <i class="pi pi-sparkles text-primary mr-2"></i>Semantic Search
+  </h1>
+  <p class="text-color-secondary m-0">
+    Describe what you are looking for in natural language. Claude analyses every animal in the shelter and returns the most relevant matches, with an explanation of why each one fits.
+  </p>
+</div>
+
+<!-- Query Card -->
+<p-card styleClass="shadow-2 mb-4">
+  <ng-template pTemplate="content">
+    <div class="flex flex-column gap-3">
+      <label class="font-semibold text-sm">
+        Describe the animal you are looking for
+      </label>
+      <textarea pInputTextarea [(ngModel)]="query" rows="3"
+                placeholder="e.g. calm cat suitable for an apartment and an elderly person, friendly dog good with children, injured animal needing care..."
+                class="w-full"
+                [disabled]="searching"
+                (keydown.control.enter)="search()"></textarea>
+
+      <div class="flex flex-wrap gap-3 align-items-end justify-content-between">
+        <div>
+          <label class="block font-medium text-sm mb-2">Number of results</label>
+          <p-dropdown [options]="limitOptions" [(ngModel)]="limit"
+                      [appendTo]="'body'" styleClass="w-12rem"
+                      [disabled]="searching"></p-dropdown>
+        </div>
+        <p-button icon="pi pi-search" label="Search" (onClick)="search()"
+                  [loading]="searching" [disabled]="!query.trim() || searching"></p-button>
+      </div>
+    </div>
+  </ng-template>
+</p-card>
+
+<!-- Loading -->
+<div *ngIf="searching" class="flex flex-column align-items-center py-6">
+  <p-progressSpinner [style]="{'width': '60px', 'height': '60px'}" strokeWidth="4"></p-progressSpinner>
+  <span class="text-color-secondary mt-3">
+    Searching all animals in the system, please wait...
+  </span>
+</div>
+
+<!-- Claude Narrative + Results -->
+<div *ngIf="!searching && (answer || results.length > 0)">
+
+  <!-- Narrative answer -->
+  <p-card *ngIf="answer" header="AI Analysis" styleClass="shadow-2 mb-4">
+    <ng-template pTemplate="content">
+      <div class="flex align-items-start gap-3">
+        <div class="flex align-items-center justify-content-center border-round bg-primary-100 text-primary"
+             style="width: 2.5rem; height: 2.5rem; flex-shrink: 0;">
+          <i class="pi pi-sparkles text-xl"></i>
+        </div>
+        <div class="flex-grow-1">
+          <span class="text-color-secondary text-sm block mb-2" *ngIf="lastQuery">
+            For query: <em>"{{ lastQuery }}"</em>
+          </span>
+          <div class="line-height-3 white-space-pre-line">{{ answer }}</div>
+        </div>
+      </div>
+    </ng-template>
+  </p-card>
+
+  <!-- Result cards -->
+  <p-card *ngIf="results.length > 0" header="Matched Animals ({{ results.length }})"
+          styleClass="shadow-2">
+    <ng-template pTemplate="content">
+      <div class="flex flex-column gap-3">
+        <div *ngFor="let match of results"
+             class="border-1 surface-border border-round p-3 cursor-pointer hover:surface-hover transition-colors transition-duration-200"
+             (click)="viewAnimal(match.id)">
+          <div class="flex justify-content-between align-items-start mb-2">
+            <div>
+              <span class="font-bold text-xl">{{ match.name }}</span>
+              <span class="text-color-secondary ml-2">{{ match.category }} · {{ match.breed }}</span>
+            </div>
+            <p-tag [value]="getScorePercent(match.relevance_score) + '% match'"
+                   [severity]="getScoreSeverity(match.relevance_score)"></p-tag>
+          </div>
+
+          <div class="text-sm text-color-secondary mb-3">{{ match.description }}</div>
+
+          <div class="flex align-items-center gap-3">
+            <p-tag [value]="match.status" [severity]="getStatusSeverity(match.status)"></p-tag>
+            <div class="flex-grow-1">
+              <div class="border-round overflow-hidden surface-200" style="height: 8px;">
+                <div class="h-full border-round"
+                     [style.width.%]="getScorePercent(match.relevance_score)"
+                     [style.background-color]="match.relevance_score >= 0.8 ? 'var(--green-500)' : match.relevance_score >= 0.6 ? 'var(--yellow-500)' : 'var(--blue-500)'">
+                </div>
+              </div>
+            </div>
+            <p-button icon="pi pi-arrow-right" label="Details" [text]="true"
+                      (onClick)="viewAnimal(match.id); $event.stopPropagation()"></p-button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-card>
+
+  <!-- No results -->
+  <p-card *ngIf="results.length === 0 && answer" styleClass="shadow-2">
+    <ng-template pTemplate="content">
+      <div class="text-center py-4">
+        <i class="pi pi-inbox text-5xl text-color-secondary mb-3 block"></i>
+        <span class="text-color-secondary block mb-2">No matching animals found.</span>
+        <span class="text-color-secondary text-sm">Try a different or broader description.</span>
+      </div>
+    </ng-template>
+  </p-card>
+</div>
+
+<!-- Empty state -->
+<div *ngIf="!searching && !answer && results.length === 0" class="text-center py-6">
+  <i class="pi pi-search text-6xl text-color-secondary mb-3 block"></i>
+  <span class="text-xl text-color-secondary block mb-2">Ready to search</span>
+  <span class="text-color-secondary">Enter a description above and press Search.</span>
+</div>
