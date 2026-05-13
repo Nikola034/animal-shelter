@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 import { TableModule } from 'primeng/table';
@@ -68,10 +69,17 @@ export class UserManagement implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    // Allow callers to deep-link a pre-filter, e.g. /admin/pending-users
+    // routes here with ?status=Pending so the table opens already filtered.
+    const initialStatus = this.route.snapshot.queryParamMap.get('status') as UserStatus | null;
+    if (initialStatus && USER_STATUS_OPTIONS.some(o => o.value === initialStatus)) {
+      this.statusFilter = initialStatus;
+    }
     this.loadUsers();
   }
 
