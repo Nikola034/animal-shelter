@@ -241,93 +241,141 @@ html, body {
   border-color: var(--p-primary-500, #ef4444);
 }
 
-/* ── Sidebar (PrimeNG p-menu) — solid red with white detail ──── */
-app-sidebar > .surface-card {
-  background: var(--p-primary-700, #b91c1c) !important;
-  border-right: 0;
+/* ── Sidebar — solid red rail with white text ───────────────────
+   We give the sidebar its own class (.shelter-sidebar) and scope
+   the PrimeNG menu design tokens locally so the p-menu inherits
+   colours without needing !important everywhere. */
+
+.shelter-sidebar {
+  background: #b91c1c; /* primary.700 */
   color: #ffffff;
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.15);
+  height: 100%;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.18);
+
+  /* Scope PrimeNG menu tokens to this container only */
+  --p-menu-background: transparent;
+  --p-menu-border-color: transparent;
+  --p-menu-color: #ffffff;
+  --p-menu-item-color: rgba(255, 255, 255, 0.92);
+  --p-menu-item-icon-color: rgba(255, 255, 255, 0.85);
+  --p-menu-item-focus-color: #ffffff;
+  --p-menu-item-focus-icon-color: #ffffff;
+  --p-menu-item-focus-background: rgba(255, 255, 255, 0.12);
+  --p-menu-item-active-background: #ffffff;
+  --p-menu-item-active-color: #b91c1c;
+  --p-menu-item-active-icon-color: #b91c1c;
+  --p-menu-submenu-label-background: transparent;
+  --p-menu-submenu-label-color: rgba(255, 255, 255, 0.7);
 }
 
-/* Brand header inside the sidebar */
-app-sidebar > .surface-card > .text-center .pi {
-  color: #ffffff !important;
+.shelter-sidebar .shelter-sidebar-brand .pi,
+.shelter-sidebar .shelter-sidebar-brand .font-bold {
+  color: #ffffff;
 }
 
-app-sidebar > .surface-card > .text-center .font-bold {
-  color: #ffffff;
+.shelter-sidebar .shelter-sidebar-brand .font-bold {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.95rem;
 }
 
-app-sidebar .p-menu {
-  background: transparent !important;
-  border: none !important;
-  padding: 0.25rem 0;
-  color: inherit;
+.shelter-sidebar .shelter-sidebar-brand {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  padding-bottom: 1rem;
 }
 
-app-sidebar .p-menu .p-submenu-header {
-  background: transparent !important;
-  color: rgba(255, 255, 255, 0.62) !important;
+/* p-menu itself */
+.shelter-sidebar .p-menu {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0;
+  width: 100%;
+}
+
+/* Section headers ("Main", "Daily Operations", etc.) */
+.shelter-sidebar .p-menu .p-menu-submenu-label,
+.shelter-sidebar .p-menu .p-submenu-header {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 700;
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 1.1rem 1rem 0.4rem;
-  border: none;
+  border: 0;
 }
 
-app-sidebar .p-menu .p-menuitem-link {
-  padding: 0.75rem 1rem !important;
+/* Each menu row */
+.shelter-sidebar .p-menu .p-menuitem-link,
+.shelter-sidebar .p-menu .p-menu-item-link {
+  padding: 0.75rem 1rem;
   border-left: 4px solid transparent;
-  border-radius: 0 !important;
-  background: transparent !important;
-  color: rgba(255, 255, 255, 0.88) !important;
+  border-radius: 0;
+  color: rgba(255, 255, 255, 0.92);
   transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
 }
 
-app-sidebar .p-menu .p-menuitem-link .p-menuitem-text {
+.shelter-sidebar .p-menu .p-menuitem-text,
+.shelter-sidebar .p-menu .p-menu-item-label {
   font-weight: 600;
   font-size: 0.95rem;
-  color: inherit !important;
+  color: inherit;
 }
 
-app-sidebar .p-menu .p-menuitem-link .p-menuitem-icon {
-  color: rgba(255, 255, 255, 0.78) !important;
+.shelter-sidebar .p-menu .p-menuitem-icon,
+.shelter-sidebar .p-menu .p-menu-item-icon {
+  color: rgba(255, 255, 255, 0.85);
   font-size: 1.05rem;
   margin-right: 0.75rem;
 }
 
-app-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
+/* Hover state */
+.shelter-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover,
+.shelter-sidebar .p-menu .p-menu-item-link:not(.p-disabled):hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
 }
 
-app-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon {
-  color: #ffffff !important;
+.shelter-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon,
+.shelter-sidebar .p-menu .p-menu-item-link:not(.p-disabled):hover .p-menu-item-icon {
+  color: #ffffff;
 }
 
-/* Active route: white pill with red text + 4px white left rail */
-app-sidebar .p-menu .p-menuitem-link.router-link-active,
-app-sidebar .p-menu .p-menuitem-link.p-menuitem-link-active {
-  background: #ffffff !important;
+/* Active state: inverted — white pill with red text + white left rail */
+.shelter-sidebar .p-menu .router-link-active,
+.shelter-sidebar .p-menu .p-menuitem-link-active,
+.shelter-sidebar .p-menu .p-menu-item-link-active {
+  background: #ffffff;
   border-left-color: #ffffff;
-  color: var(--p-primary-700, #b91c1c) !important;
+  color: #b91c1c;
 }
 
-app-sidebar .p-menu .p-menuitem-link.router-link-active .p-menuitem-icon,
-app-sidebar .p-menu .p-menuitem-link.router-link-active .p-menuitem-text,
-app-sidebar .p-menu .p-menuitem-link.p-menuitem-link-active .p-menuitem-icon,
-app-sidebar .p-menu .p-menuitem-link.p-menuitem-link-active .p-menuitem-text {
-  color: var(--p-primary-700, #b91c1c) !important;
+.shelter-sidebar .p-menu .router-link-active .p-menuitem-text,
+.shelter-sidebar .p-menu .router-link-active .p-menuitem-icon,
+.shelter-sidebar .p-menu .router-link-active .p-menu-item-label,
+.shelter-sidebar .p-menu .router-link-active .p-menu-item-icon,
+.shelter-sidebar .p-menu .p-menuitem-link-active .p-menuitem-text,
+.shelter-sidebar .p-menu .p-menuitem-link-active .p-menuitem-icon {
+  color: #b91c1c;
 }
 
 /* ── Topbar / page surfaces ─────────────────────────────────── */
 .layout-topbar {
   border-bottom: var(--shelter-border);
   background: var(--surface-0);
+}
+
+/* ── Slider: silence "[Intervention] touchstart cancel" warnings ─
+   PrimeNG's slider calls preventDefault on touchstart to take over
+   pointer handling, but the browser marks scroll-region touch
+   events as passive (non-cancelable) and prints an Intervention
+   message. Telling the browser the slider owns its touch
+   interaction via touch-action: none stops the warning without
+   changing how the slider behaves. */
+.p-slider,
+.p-slider .p-slider-handle,
+.p-slider .p-slider-range {
+  touch-action: none;
 }
 
 /* ── Home page: centered hero on white surface ─────────────── */
