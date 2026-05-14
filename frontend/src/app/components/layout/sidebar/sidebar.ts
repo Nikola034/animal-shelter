@@ -69,7 +69,7 @@ export class Sidebar {
       {
         label: 'Main',
         items: [
-          { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app' },
+          { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app', routerLinkActiveOptions: { exact: true } },
           { label: 'Animals', icon: 'pi pi-id-card', routerLink: '/app/animals' },
         ]
       },
@@ -96,7 +96,7 @@ export class Sidebar {
       {
         label: 'Main',
         items: [
-          { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app' },
+          { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app', routerLinkActiveOptions: { exact: true } },
           { label: 'Animals', icon: 'pi pi-id-card', routerLink: '/app/animals' },
         ]
       },
@@ -119,7 +119,7 @@ export class Sidebar {
       {
         label: 'Main',
         items: [
-          { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app' },
+          { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app', routerLinkActiveOptions: { exact: true } },
           { label: 'Animals', icon: 'pi pi-id-card', routerLink: '/app/animals' },
         ]
       },

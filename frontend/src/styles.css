@@ -252,20 +252,24 @@ html, body {
   height: 100%;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.18);
 
-  /* Scope PrimeNG menu tokens to this container only */
+  /* Scope PrimeNG menu tokens to this container only.
+     Hover/focus on a red rail uses a DARKER red (primary.800) so
+     white text is always readable — no white-on-white edge cases.
+     Click-active stays neutral red (no flash); router-link-active
+     is handled separately and inverts to white+red.            */
   --p-menu-background: transparent;
   --p-menu-border-color: transparent;
   --p-menu-color: #ffffff;
-  --p-menu-item-color: rgba(255, 255, 255, 0.92);
-  --p-menu-item-icon-color: rgba(255, 255, 255, 0.85);
+  --p-menu-item-color: #ffffff;
+  --p-menu-item-icon-color: rgba(255, 255, 255, 0.92);
   --p-menu-item-focus-color: #ffffff;
   --p-menu-item-focus-icon-color: #ffffff;
-  --p-menu-item-focus-background: rgba(255, 255, 255, 0.12);
-  --p-menu-item-active-background: #ffffff;
-  --p-menu-item-active-color: #b91c1c;
-  --p-menu-item-active-icon-color: #b91c1c;
+  --p-menu-item-focus-background: #991b1b;       /* primary.800 */
+  --p-menu-item-active-background: #991b1b;
+  --p-menu-item-active-color: #ffffff;
+  --p-menu-item-active-icon-color: #ffffff;
   --p-menu-submenu-label-background: transparent;
-  --p-menu-submenu-label-color: rgba(255, 255, 255, 0.7);
+  --p-menu-submenu-label-color: rgba(255, 255, 255, 0.78);
 }
 
 .shelter-sidebar .shelter-sidebar-brand .pi,
@@ -311,7 +315,7 @@ html, body {
   padding: 0.75rem 1rem;
   border-left: 4px solid transparent;
   border-radius: 0;
-  color: rgba(255, 255, 255, 0.92);
+  color: #ffffff;
   transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
 }
 
@@ -324,15 +328,15 @@ html, body {
 
 .shelter-sidebar .p-menu .p-menuitem-icon,
 .shelter-sidebar .p-menu .p-menu-item-icon {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 1.05rem;
   margin-right: 0.75rem;
 }
 
-/* Hover state */
+/* Hover: darker red — white text stays readable */
 .shelter-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover,
 .shelter-sidebar .p-menu .p-menu-item-link:not(.p-disabled):hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: #991b1b; /* primary.800 */
   color: #ffffff;
 }
 
@@ -341,10 +345,13 @@ html, body {
   color: #ffffff;
 }
 
-/* Active state: inverted — white pill with red text + white left rail */
-.shelter-sidebar .p-menu .router-link-active,
-.shelter-sidebar .p-menu .p-menuitem-link-active,
-.shelter-sidebar .p-menu .p-menu-item-link-active {
+/* Router-link-active: inverted white pill with red text + 4px white rail.
+   Higher specificity + after the hover rule so the active item stays
+   inverted even while hovered. */
+.shelter-sidebar .p-menu .p-menuitem-link.router-link-active,
+.shelter-sidebar .p-menu .p-menu-item-link.router-link-active,
+.shelter-sidebar .p-menu a.p-menuitem-link.router-link-active,
+.shelter-sidebar .p-menu .p-menuitem-link.router-link-active:hover {
   background: #ffffff;
   border-left-color: #ffffff;
   color: #b91c1c;
@@ -353,9 +360,7 @@ html, body {
 .shelter-sidebar .p-menu .router-link-active .p-menuitem-text,
 .shelter-sidebar .p-menu .router-link-active .p-menuitem-icon,
 .shelter-sidebar .p-menu .router-link-active .p-menu-item-label,
-.shelter-sidebar .p-menu .router-link-active .p-menu-item-icon,
-.shelter-sidebar .p-menu .p-menuitem-link-active .p-menuitem-text,
-.shelter-sidebar .p-menu .p-menuitem-link-active .p-menuitem-icon {
+.shelter-sidebar .p-menu .router-link-active .p-menu-item-icon {
   color: #b91c1c;
 }
 
