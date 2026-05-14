@@ -41,7 +41,7 @@ export class Home {
     },
     {
       label: 'Caretaker',
-      icon: 'pi pi-heart-fill',
+      icon: 'pi pi-clipboard',
       iconBg: 'bg-pink-100',
       iconColor: 'text-pink-600',
       description:

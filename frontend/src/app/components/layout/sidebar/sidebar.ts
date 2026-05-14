@@ -55,7 +55,7 @@ export class Sidebar {
       {
         label: 'Browse',
         items: [
-          { label: 'Animals', icon: 'pi pi-heart', routerLink: '/app/animals' },
+          { label: 'Animals', icon: 'pi pi-id-card', routerLink: '/app/animals' },
           { label: 'Semantic Search', icon: 'pi pi-sparkles', routerLink: '/app/search' },
         ]
       }
@@ -70,7 +70,7 @@ export class Sidebar {
         label: 'Main',
         items: [
           { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app' },
-          { label: 'Animals', icon: 'pi pi-heart', routerLink: '/app/animals' },
+          { label: 'Animals', icon: 'pi pi-id-card', routerLink: '/app/animals' },
         ]
       },
       {
@@ -97,7 +97,7 @@ export class Sidebar {
         label: 'Main',
         items: [
           { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app' },
-          { label: 'Animals', icon: 'pi pi-heart', routerLink: '/app/animals' },
+          { label: 'Animals', icon: 'pi pi-id-card', routerLink: '/app/animals' },
         ]
       },
       {
@@ -120,7 +120,7 @@ export class Sidebar {
         label: 'Main',
         items: [
           { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app' },
-          { label: 'Animals', icon: 'pi pi-heart', routerLink: '/app/animals' },
+          { label: 'Animals', icon: 'pi pi-id-card', routerLink: '/app/animals' },
         ]
       },
       {
