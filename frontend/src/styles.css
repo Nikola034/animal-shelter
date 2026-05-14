@@ -2,6 +2,22 @@
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
 
+/* ────────────────────────────────────────────────────────────
+   Shelter design system
+   ─ Tailwind-red primary on white surfaces.
+   ─ Sharp, minimal corners (2px containers, 0 buttons).
+   ─ Material-inspired emphasis: clear typography, flat surfaces,
+     subtle elevations, prominent active-state markers.
+   ──────────────────────────────────────────────────────────── */
+
+:root {
+  --shelter-radius: 2px;
+  --shelter-radius-strong: 0px;
+  --shelter-border: 1px solid var(--surface-300);
+  --shelter-elevation-1: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.06);
+  --shelter-elevation-2: 0 2px 4px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
 /* Global Styles */
 html, body {
   margin: 0;
@@ -10,6 +26,60 @@ html, body {
   font-family: var(--font-family);
   background-color: var(--surface-ground);
   color: var(--text-color);
+  /* slightly tighter letter-spacing for Material-ish text density */
+  letter-spacing: 0.01em;
+}
+
+/* ── Sharpen radii across the board ─────────────────────────── */
+
+.p-card,
+.p-dialog,
+.p-datatable,
+.p-datatable .p-datatable-header,
+.p-datatable .p-datatable-footer,
+.p-inputtext,
+.p-password-input,
+.p-textarea,
+.p-select,
+.p-dropdown,
+.p-multiselect,
+.p-datepicker-input,
+.p-datepicker-panel,
+.p-overlay,
+.p-popover,
+.p-menu,
+.p-listbox,
+.p-tabview-nav-content,
+.p-tabs-nav-content,
+.p-message,
+.p-toast .p-toast-message,
+.p-progressbar {
+  border-radius: var(--shelter-radius) !important;
+}
+
+/* Buttons go fully square for the sharpest Material-text-button feel. */
+.p-button,
+.p-button.p-button-rounded,
+.p-tag,
+.p-chip,
+.p-badge {
+  border-radius: var(--shelter-radius-strong) !important;
+}
+
+/* Rounded p-button overrides — when the template asks for fully rounded,
+   give it a subtle 2px instead of 999px so the language is consistent. */
+.p-button.p-button-rounded {
+  border-radius: var(--shelter-radius) !important;
+}
+
+/* Inputs feel crisper with a touch more vertical room. */
+.p-inputtext,
+.p-password-input,
+.p-textarea,
+.p-select,
+.p-dropdown-label {
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
 }
 
 /* Layout styles */
@@ -63,8 +133,166 @@ html, body {
   padding-top: 0;
 }
 
+/* ── Cards: flat with a single hairline border, like Material outlined ── */
+.p-card {
+  box-shadow: none !important;
+  border: var(--shelter-border);
+  background: var(--surface-0);
+}
+
+.p-card.shadow-1 { box-shadow: var(--shelter-elevation-1) !important; }
+.p-card.shadow-2 { box-shadow: var(--shelter-elevation-2) !important; }
+.p-card.shadow-4 { box-shadow: var(--shelter-elevation-2) !important; }
+
+.p-card .p-card-title {
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* ── Tables ─────────────────────────────────────────────────── */
+.p-datatable {
+  border: var(--shelter-border);
+  overflow: hidden;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--surface-50);
+  color: var(--text-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--surface-200);
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  transition: background-color 120ms ease;
+}
+
 .p-datatable .p-datatable-tbody > tr:hover {
-  background-color: var(--surface-hover);
+  background-color: var(--p-primary-50, var(--surface-hover));
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  border-bottom: 1px solid var(--surface-100);
+}
+
+/* ── Buttons: Material-style typography & emphasis ──────────── */
+.p-button {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined) {
+  box-shadow: var(--shelter-elevation-1);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):hover {
+  box-shadow: var(--shelter-elevation-2);
+}
+
+.p-button.p-button-text {
+  font-weight: 600;
+}
+
+.p-button.p-button-outlined {
+  border-width: 1.5px;
+}
+
+/* ── Tags / chips: square with strong colour ───────────────── */
+.p-tag {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.55rem;
+}
+
+/* ── Inputs: subtle focus ring in primary ──────────────────── */
+.p-inputtext:enabled:focus,
+.p-textarea:enabled:focus,
+.p-password-input:enabled:focus,
+.p-select:not(.p-disabled).p-focus,
+.p-dropdown:not(.p-disabled).p-focus {
+  box-shadow: 0 0 0 2px var(--p-primary-100, rgba(220, 38, 38, 0.15));
+  border-color: var(--p-primary-500, #ef4444);
+}
+
+/* ── Sidebar (PrimeNG p-menu) ──────────────────────────────── */
+.layout-sidebar-container,
+app-sidebar .surface-card {
+  border-right: var(--shelter-border);
+  background: var(--surface-0);
+}
+
+app-sidebar .p-menu {
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0;
+}
+
+app-sidebar .p-menu .p-submenu-header {
+  background: transparent;
+  color: var(--text-color-secondary);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1rem 1rem 0.4rem;
+}
+
+app-sidebar .p-menu .p-menuitem-link {
+  padding: 0.7rem 1rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 !important;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+app-sidebar .p-menu .p-menuitem-link .p-menuitem-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+app-sidebar .p-menu .p-menuitem-link .p-menuitem-icon {
+  color: var(--text-color-secondary);
+  font-size: 1.05rem;
+  margin-right: 0.75rem;
+}
+
+app-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover {
+  background: var(--p-primary-50, #fef2f2);
+}
+
+app-sidebar .p-menu .p-menuitem-link.router-link-active,
+app-sidebar .p-menu .p-menuitem-link.p-menuitem-link-active {
+  background: var(--p-primary-50, #fef2f2);
+  border-left-color: var(--p-primary-600, #dc2626);
+  color: var(--p-primary-700, #b91c1c);
+}
+
+app-sidebar .p-menu .p-menuitem-link.router-link-active .p-menuitem-icon,
+app-sidebar .p-menu .p-menuitem-link.router-link-active .p-menuitem-text {
+  color: var(--p-primary-700, #b91c1c);
+}
+
+/* ── Topbar / page surfaces ─────────────────────────────────── */
+.layout-topbar {
+  border-bottom: var(--shelter-border);
+  background: var(--surface-0);
+}
+
+/* ── Dialogs: header and content cleanly separated ─────────── */
+.p-dialog .p-dialog-header {
+  border-bottom: var(--shelter-border);
+  padding: 1rem 1.25rem;
+}
+.p-dialog .p-dialog-header .p-dialog-title {
+  font-weight: 700;
+}
+.p-dialog .p-dialog-content {
+  padding: 1.25rem;
 }
 
 /* Toast positioning fix */
