@@ -1,7 +1,7 @@
-<div class="surface-card h-full shadow-1 p-3" *ngIf="visible">
-  <div class="text-center mb-4 pt-3">
-    <i class="pi pi-heart-fill text-primary text-4xl"></i>
-    <div class="font-bold text-lg mt-2">Menu</div>
+<div class="shelter-sidebar h-full p-3" *ngIf="visible">
+  <div class="shelter-sidebar-brand text-center mb-4 pt-3">
+    <i class="pi pi-home text-4xl"></i>
+    <div class="font-bold text-lg mt-2">Animal Shelter</div>
   </div>
-  <p-menu [model]="menuItems" styleClass="w-full border-none"></p-menu>
+  <p-menu [model]="menuItems" styleClass="shelter-sidebar-menu w-full border-none"></p-menu>
 </div>

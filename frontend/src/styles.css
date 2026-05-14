@@ -2,6 +2,22 @@
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
 
+/* ────────────────────────────────────────────────────────────
+   Shelter design system
+   ─ Tailwind-red primary on white surfaces.
+   ─ Sharp, minimal corners (2px containers, 0 buttons).
+   ─ Material-inspired emphasis: clear typography, flat surfaces,
+     subtle elevations, prominent active-state markers.
+   ──────────────────────────────────────────────────────────── */
+
+:root {
+  --shelter-radius: 2px;
+  --shelter-radius-strong: 0px;
+  --shelter-border: 1px solid var(--surface-300);
+  --shelter-elevation-1: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.06);
+  --shelter-elevation-2: 0 2px 4px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
 /* Global Styles */
 html, body {
   margin: 0;
@@ -10,6 +26,81 @@ html, body {
   font-family: var(--font-family);
   background-color: var(--surface-ground);
   color: var(--text-color);
+  /* slightly tighter letter-spacing for Material-ish text density */
+  letter-spacing: 0.01em;
+}
+
+/* ── Sharpen radii across the board ─────────────────────────── */
+
+.p-card,
+.p-dialog,
+.p-datatable,
+.p-datatable .p-datatable-header,
+.p-datatable .p-datatable-footer,
+.p-inputtext,
+.p-password-input,
+.p-textarea,
+.p-select,
+.p-dropdown,
+.p-multiselect,
+.p-datepicker-input,
+.p-datepicker-panel,
+.p-overlay,
+.p-popover,
+.p-menu,
+.p-listbox,
+.p-tabview-nav-content,
+.p-tabs-nav-content,
+.p-message,
+.p-toast .p-toast-message,
+.p-progressbar {
+  border-radius: var(--shelter-radius) !important;
+}
+
+/* Buttons go fully square for the sharpest Material-text-button feel. */
+.p-button,
+.p-button.p-button-rounded,
+.p-tag,
+.p-chip,
+.p-badge {
+  border-radius: var(--shelter-radius-strong) !important;
+}
+
+/* Rounded p-button overrides — when the template asks for fully rounded,
+   give it a subtle 2px instead of 999px so the language is consistent. */
+.p-button.p-button-rounded {
+  border-radius: var(--shelter-radius) !important;
+}
+
+/* Unified control height so buttons and form fields in a row align
+   regardless of which PrimeNG component they wrap. Textareas keep
+   their natural height (driven by rows) — exempt them explicitly. */
+:root {
+  --shelter-control-height: 2.625rem;
+}
+
+.p-button:not(.p-button-icon-only):not(.p-button-text),
+.p-button.p-button-icon-only:not(.p-button-rounded),
+.p-inputtext:not(textarea):not(.p-textarea),
+.p-password .p-password-input,
+.p-select,
+.p-dropdown,
+.p-multiselect,
+.p-datepicker-input,
+.p-inputnumber .p-inputnumber-input {
+  height: var(--shelter-control-height);
+}
+
+/* Rounded icon-only buttons stay square but smaller — toolbar style. */
+.p-button.p-button-icon-only.p-button-rounded {
+  width: var(--shelter-control-height);
+  height: var(--shelter-control-height);
+}
+
+/* Stat / summary cards arranged in a PrimeFlex grid row must stretch
+   to equal heights even if their inner content differs. */
+.grid > [class*='col-'] > .p-card {
+  height: 100%;
 }
 
 /* Layout styles */
@@ -63,8 +154,268 @@ html, body {
   padding-top: 0;
 }
 
+/* ── Cards: flat with a single hairline border, like Material outlined ── */
+.p-card {
+  box-shadow: none !important;
+  border: var(--shelter-border);
+  background: var(--surface-0);
+}
+
+.p-card.shadow-1 { box-shadow: var(--shelter-elevation-1) !important; }
+.p-card.shadow-2 { box-shadow: var(--shelter-elevation-2) !important; }
+.p-card.shadow-4 { box-shadow: var(--shelter-elevation-2) !important; }
+
+.p-card .p-card-title {
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+/* ── Tables ─────────────────────────────────────────────────── */
+.p-datatable {
+  border: var(--shelter-border);
+  overflow: hidden;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: var(--surface-50);
+  color: var(--text-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--surface-200);
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  transition: background-color 120ms ease;
+}
+
 .p-datatable .p-datatable-tbody > tr:hover {
-  background-color: var(--surface-hover);
+  background-color: var(--p-primary-50, var(--surface-hover));
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  border-bottom: 1px solid var(--surface-100);
+}
+
+/* ── Buttons: Material-style typography & emphasis ──────────── */
+.p-button {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined) {
+  box-shadow: var(--shelter-elevation-1);
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined):hover {
+  box-shadow: var(--shelter-elevation-2);
+}
+
+.p-button.p-button-text {
+  font-weight: 600;
+}
+
+.p-button.p-button-outlined {
+  border-width: 1.5px;
+}
+
+/* ── Tags / chips: square with strong colour ───────────────── */
+.p-tag {
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.55rem;
+}
+
+/* ── Inputs: subtle focus ring in primary ──────────────────── */
+.p-inputtext:enabled:focus,
+.p-textarea:enabled:focus,
+.p-password-input:enabled:focus,
+.p-select:not(.p-disabled).p-focus,
+.p-dropdown:not(.p-disabled).p-focus {
+  box-shadow: 0 0 0 2px var(--p-primary-100, rgba(220, 38, 38, 0.15));
+  border-color: var(--p-primary-500, #ef4444);
+}
+
+/* ── Sidebar — solid red rail with white text ───────────────────
+   We give the sidebar its own class (.shelter-sidebar) and scope
+   the PrimeNG menu design tokens locally so the p-menu inherits
+   colours without needing !important everywhere. */
+
+.shelter-sidebar {
+  background: #b91c1c; /* primary.700 */
+  color: #ffffff;
+  height: 100%;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.18);
+
+  /* Scope PrimeNG menu tokens to this container only.
+     Hover/focus on a red rail uses a DARKER red (primary.800) so
+     white text is always readable — no white-on-white edge cases.
+     Click-active stays neutral red (no flash); router-link-active
+     is handled separately and inverts to white+red.            */
+  --p-menu-background: transparent;
+  --p-menu-border-color: transparent;
+  --p-menu-color: #ffffff;
+  --p-menu-item-color: #ffffff;
+  --p-menu-item-icon-color: rgba(255, 255, 255, 0.92);
+  --p-menu-item-focus-color: #ffffff;
+  --p-menu-item-focus-icon-color: #ffffff;
+  --p-menu-item-focus-background: #991b1b;       /* primary.800 */
+  --p-menu-item-active-background: #991b1b;
+  --p-menu-item-active-color: #ffffff;
+  --p-menu-item-active-icon-color: #ffffff;
+  --p-menu-submenu-label-background: transparent;
+  --p-menu-submenu-label-color: rgba(255, 255, 255, 0.78);
+}
+
+.shelter-sidebar .shelter-sidebar-brand .pi,
+.shelter-sidebar .shelter-sidebar-brand .font-bold {
+  color: #ffffff;
+}
+
+.shelter-sidebar .shelter-sidebar-brand .font-bold {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+
+.shelter-sidebar .shelter-sidebar-brand {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  padding-bottom: 1rem;
+}
+
+/* p-menu itself */
+.shelter-sidebar .p-menu {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0;
+  width: 100%;
+}
+
+/* Section headers ("Main", "Daily Operations", etc.) */
+.shelter-sidebar .p-menu .p-menu-submenu-label,
+.shelter-sidebar .p-menu .p-submenu-header {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1.1rem 1rem 0.4rem;
+  border: 0;
+}
+
+/* Each menu row */
+.shelter-sidebar .p-menu .p-menuitem-link,
+.shelter-sidebar .p-menu .p-menu-item-link {
+  padding: 0.75rem 1rem;
+  border-left: 4px solid transparent;
+  border-radius: 0;
+  color: #ffffff;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.shelter-sidebar .p-menu .p-menuitem-text,
+.shelter-sidebar .p-menu .p-menu-item-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: inherit;
+}
+
+.shelter-sidebar .p-menu .p-menuitem-icon,
+.shelter-sidebar .p-menu .p-menu-item-icon {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.05rem;
+  margin-right: 0.75rem;
+}
+
+/* Hover: darker red — white text stays readable */
+.shelter-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover,
+.shelter-sidebar .p-menu .p-menu-item-link:not(.p-disabled):hover {
+  background: #991b1b; /* primary.800 */
+  color: #ffffff;
+}
+
+.shelter-sidebar .p-menu .p-menuitem-link:not(.p-disabled):hover .p-menuitem-icon,
+.shelter-sidebar .p-menu .p-menu-item-link:not(.p-disabled):hover .p-menu-item-icon {
+  color: #ffffff;
+}
+
+/* Router-link-active: inverted white pill with red text + 4px white rail.
+   Higher specificity + after the hover rule so the active item stays
+   inverted even while hovered. */
+.shelter-sidebar .p-menu .p-menuitem-link.router-link-active,
+.shelter-sidebar .p-menu .p-menu-item-link.router-link-active,
+.shelter-sidebar .p-menu a.p-menuitem-link.router-link-active,
+.shelter-sidebar .p-menu .p-menuitem-link.router-link-active:hover {
+  background: #ffffff;
+  border-left-color: #ffffff;
+  color: #b91c1c;
+}
+
+.shelter-sidebar .p-menu .router-link-active .p-menuitem-text,
+.shelter-sidebar .p-menu .router-link-active .p-menuitem-icon,
+.shelter-sidebar .p-menu .router-link-active .p-menu-item-label,
+.shelter-sidebar .p-menu .router-link-active .p-menu-item-icon {
+  color: #b91c1c;
+}
+
+/* ── Topbar / page surfaces ─────────────────────────────────── */
+.layout-topbar {
+  border-bottom: var(--shelter-border);
+  background: var(--surface-0);
+}
+
+/* ── Slider: silence "[Intervention] touchstart cancel" warnings ─
+   PrimeNG's slider calls preventDefault on touchstart to take over
+   pointer handling, but the browser marks scroll-region touch
+   events as passive (non-cancelable) and prints an Intervention
+   message. Telling the browser the slider owns its touch
+   interaction via touch-action: none stops the warning without
+   changing how the slider behaves. */
+.p-slider,
+.p-slider .p-slider-handle,
+.p-slider .p-slider-range {
+  touch-action: none;
+}
+
+/* ── Home page: centered hero on white surface ─────────────── */
+.home-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background: var(--surface-ground);
+}
+
+.home-page .home-content {
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.home-page .home-tagline {
+  max-width: 42rem;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* ── Dialogs: header and content cleanly separated ─────────── */
+.p-dialog .p-dialog-header {
+  border-bottom: var(--shelter-border);
+  padding: 1rem 1.25rem;
+}
+.p-dialog .p-dialog-header .p-dialog-title {
+  font-weight: 700;
+}
+.p-dialog .p-dialog-content {
+  padding: 1.25rem;
 }
 
 /* Toast positioning fix */
