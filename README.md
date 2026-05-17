@@ -42,15 +42,15 @@ Sistem je dizajniran kao mikroservisna aplikacija koja se sastoji od 5 glavnih k
   - Refresh token mehanizam
 
 ### 2. Animal Registry Service
-- **Odgovornosti**: Centralna evidencija životinja i medicinska dokumentacija
-- **Tehnologije**: Java (Spring Boot), MongoDB
+- **Odgovornosti**: Centralna evidencija životinja, medicinska dokumentacija i RAG pretraga
+- **Tehnologije**: Java (Spring Boot), MongoDB Atlas (sa Vector Search), text2vec-transformers, Anthropic Claude API
 - **Ključne funkcionalnosti**:
   - CRUD operacije za životinje
   - Evidencija kategorija: psi, mačke, ptice, gmizavci, glodari, kunići, egzotične životinje
   - Upload slika životinja
   - Medicinska evidencija (vakcine, bolesti, tretmani, dijagnoze)
   - Pretraga po vrsti, imenu, statusu, čip ID-u
-  - RAG pretraga životinja putem prirodnog jezika (semantičko pretraživanje po opisu)
+  - RAG pretraga putem prirodnog jezika (vektorska pretraga + LLM odgovor)
   - Istorija premeštanja i promena statusa
 
 ### 3. Activity Tracking Service
@@ -107,8 +107,7 @@ Sistem koristi API Gateway kao centralnu tačku pristupa kroz koju prolazi sva k
 ## Baze podataka
 
 - **PostgreSQL** (User Service) - Relaciona baza za korisnike, uloge i autentifikaciju
-- **MongoDB** (Animal Registry, Activity Tracking, Analytics Services) - NoSQL baza za fleksibilne strukture i brze upite
-- **Weaviate** (Animal Registry Service) - Vektorska baza podataka za semantičku pretragu životinja (RAG)
+- **MongoDB Atlas Local** (Animal Registry, Activity Tracking, Analytics Services) - NoSQL baza za fleksibilne strukture i brze upite. U Animal Registry servisu se koristi i njena ugrađena podrška za **Vector Search** (`$vectorSearch` agregacija) za semantičku pretragu životinja. Embeddings se čuvaju kao polje `embedding` (384 dimenzije) direktno u dokumentima životinja, a indeks `animal_vector_index` se kreira programski pri pokretanju servisa
 
 ## Kontejnerizacija
 
@@ -149,10 +148,10 @@ Sistem koristi API Gateway kao centralnu tačku pristupa kroz koju prolazi sva k
 - Prikaz osnovnih informacija i fotografije
 - **RAG pretraga (natural language search)**:
   - Korisnik unosi upit na prirodnom jeziku (npr. "mirna mačka pogodna za stan", "energičan pas koji voli decu")
-  - Opis svake životinje se pri registraciji i ažuriranju vektorizuje i čuva u vektorskoj bazi (Weaviate)
-  - Na osnovu korisničkog upita, sistem vrši semantičku pretragu nad vektorizovanim opisima i pronalazi najrelevantnije životinje
-  - LLM (Anthropic Claude API) na osnovu pronađenih rezultata generiše konačan odgovor sa objašnjenjem zašto je svaka životinja predložena
-  - Rezultati se rangiraju po relevantnosti
+  - Upit se vektorizuje pozivom `text2vec-transformers` servisa (model `all-MiniLM-L6-v2`)
+  - Vektor se prosleđuje MongoDB-u kroz `$vectorSearch` agregaciju koja vraća najsličnije životinje (kosinusna sličnost)
+  - Rangirani rezultati se zajedno sa upitom šalju Claude API-ju koji generiše narativni odgovor sa obrazloženjem zašto svaka životinja odgovara upitu (RAG obrazac)
+  - Ako Claude API nije dostupan, sistem vraća rangirane rezultate bez LLM narativa (fallback)
 
 ### Registracija nove životinje (Upravnik, Admin)
 - Unos osnovnih podataka:
@@ -223,9 +222,9 @@ Sistem koristi API Gateway kao centralnu tačku pristupa kroz koju prolazi sva k
 - **Autentifikacija**: Spring Security + JWT
 - **Build tool**: Maven
 - **Dokumentacija API-ja**: Springdoc OpenAPI (Swagger)
-- **Vektorska baza**: Weaviate (semantička pretraga za RAG)
-- **LLM integracija**: Anthropic Claude API (generisanje odgovora na osnovu pretrage)
-- **Embedding**: Weaviate text2vec modul (vektorizacija opisa životinja)
+- **Embedding**: `text2vec-transformers` kontejner sa modelom `sentence-transformers/all-MiniLM-L6-v2` (384-dimenzioni vektori)
+- **Vektorska pretraga**: MongoDB Atlas Vector Search (`$vectorSearch` agregacija, kosinusna sličnost)
+- **LLM**: Anthropic Claude API (`claude-sonnet-4-6`) — generisanje narativnih odgovora nad rezultatima vektorske pretrage (RAG)
 
 ### Kontrola verzija
 - **Git** i **GitHub** za verzionisanje koda i kolaboraciju
