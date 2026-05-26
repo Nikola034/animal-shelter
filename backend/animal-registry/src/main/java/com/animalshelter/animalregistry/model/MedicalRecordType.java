@@ -4,5 +4,6 @@ public enum MedicalRecordType {
     Vaccine,
     Disease,
     Treatment,
-    Diagnosis
+    Diagnosis,
+    CheckUp
 }

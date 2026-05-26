@@ -125,9 +125,8 @@ Sistem koristi API Gateway kao centralnu tačku pristupa kroz koju prolazi sva k
   - Pregled životinja sa filterima i pretragom
   - Forme za unos dnevnih merenja i aktivnosti
   - Medicinska evidencija i istorija
-  - Prikaz plana prostorija sa rasporedom životinja
   - Grafikoni i analitike (Chart.js)
-  - Responzivan dizajn za tablet upotrebu
+  - Responzivan dizajn za upotrebu na tabletima
 
 ## Funkcionalnosti sistema
 
@@ -147,7 +146,7 @@ Sistem koristi API Gateway kao centralnu tačku pristupa kroz koju prolazi sva k
 - Sortiranje po uzrastu, datumu prijema
 - Prikaz osnovnih informacija i fotografije
 - **RAG pretraga (natural language search)**:
-  - Korisnik unosi upit na prirodnom jeziku (npr. "mirna mačka pogodna za stan", "energičan pas koji voli decu")
+  - Korisnik unosi upit na prirodnom jeziku (npr. "young cat suitable for apartment", "small dog that likes children")
   - Upit se vektorizuje pozivom `text2vec-transformers` servisa (model `all-MiniLM-L6-v2`)
   - Vektor se prosleđuje MongoDB-u kroz `$vectorSearch` agregaciju koja vraća najsličnije životinje (kosinusna sličnost)
   - Rangirani rezultati se zajedno sa upitom šalju Claude API-ju koji generiše narativni odgovor sa obrazloženjem zašto svaka životinja odgovara upitu (RAG obrazac)
