@@ -95,10 +95,11 @@
               <div class="relative image-grid-item" style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px;">
                 <p-image [src]="getImageUrl(img)" alt="Animal image"
                          [preview]="true"></p-image>
-                <p-button *ngIf="canManageAnimals()" icon="pi pi-times"
-                          [rounded]="true" [text]="true" severity="danger" size="small"
-                          class="absolute" [style]="{'top': '0.25rem', 'right': '0.25rem', 'z-index': '1'}"
-                          (onClick)="confirmDeleteImage(img)" pTooltip="Delete image"></p-button>
+                <div *ngIf="canManageAnimals()" class="absolute"
+                     style="top: 0.25rem; right: 0.25rem; z-index: 2;">
+                  <p-button icon="pi pi-times" [rounded]="true" severity="danger" size="small"
+                            (onClick)="confirmDeleteImage(img)" pTooltip="Delete image"></p-button>
+                </div>
               </div>
             </div>
           </div>
